@@ -1,0 +1,964 @@
+================================================================================
+                    ENDPOINTS DEL BACKEND - COLEGIO
+================================================================================
+
+================================================================================
+                           AUTH (Sin autenticación)
+================================================================================
+
+------------------------------------------------------------------------------
+POST http://localhost:3000/auth/register
+------------------------------------------------------------------------------
+Registrar nuevo usuario (PROFESOR o PADRE). ADMIN solo desde DB.
+
+Body (JSON):
+{
+  "nombres": "string",
+  "apellidos": "string",
+  "carnet": "string",
+  "password": "string",
+  "rol": "PROFESOR" | "PADRE",
+  "correo": "string (opcional)",
+  "celular": "string (opcional)",
+  "username": "string (opcional, usa carnet si no se envía)"
+}
+
+Respuesta exitosa (201):
+{
+  "success": true,
+  "data": {
+    "mensaje": "Usuario registrado exitosamente",
+    "id_persona": "uuid",
+    "username": "string",
+    "rol": "PROFESOR | PADRE"
+  }
+}
+
+Errores:
+- 400: Faltan campos obligatorios
+- 409: Carnet o username ya existe
+
+------------------------------------------------------------------------------
+POST http://localhost:3000/auth/login
+------------------------------------------------------------------------------
+Iniciar sesión
+
+Body (JSON):
+{
+  "username": "string",
+  "password": "string"
+}
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "data": {
+    "access_token": "jwt_token",
+    "nombres": "string",
+    "rol": "ADMIN | PROFESOR | PADRE"
+  }
+}
+
+Errores:
+- 401: Credenciales incorrectas
+- 400: Faltan credenciales
+
+------------------------------------------------------------------------------
+GET http://localhost:3000/auth/perfil
+------------------------------------------------------------------------------
+Obtener perfil del usuario logueado (requiere JWT)
+
+Headers:
+  Authorization: Bearer <token>
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "data": {
+    "mensaje": "Entraste a la zona VIP del colegio",
+    "datos_del_usuario": {
+      "sub": "uuid",
+      "rol": "string",
+      "id_persona": "uuid"
+    }
+  }
+}
+
+
+================================================================================
+                        USERS - ADMIN
+================================================================================
+
+Headers requeridos: Authorization: Bearer <token>
+
+------------------------------------------------------------------------------
+POST http://localhost:3000/users/estudiante
+------------------------------------------------------------------------------
+Crear estudiante (solo ADMIN)
+
+Body (JSON):
+{
+  "nombres": "string",
+  "apellidos": "string",
+  "carnet": "string (único)",
+  "correo": "string (opcional)",
+  "celular": "string (opcional)",
+  "codigo_rude": "string (opcional)",
+  "fecha_nac": "string (opcional, formato YYYY-MM-DD)"
+}
+
+Respuesta exitosa (201):
+{
+  "success": true,
+  "data": {
+    "mensaje": "Estudiante registrado exitosamente (Sin credenciales de acceso)",
+    "datos": { ...objeto estudiante completo... }
+  }
+}
+
+------------------------------------------------------------------------------
+POST http://localhost:3000/users/padre
+------------------------------------------------------------------------------
+Crear padre de familia con usuario (solo ADMIN)
+
+Body (JSON):
+{
+  "nombres": "string",
+  "apellidos": "string",
+  "carnet": "string (único)",
+  "password": "string",
+  "correo": "string (opcional)",
+  "celular": "string (opcional)",
+  "parentesco": "string (opcional, ej: padre, madre)",
+  "username": "string (opcional)"
+}
+
+Respuesta exitosa (201):
+{
+  "success": true,
+  "data": {
+    "mensaje": "Padre de familia registrado exitosamente",
+    "id_padre": "uuid",
+    "username": "string"
+  }
+}
+
+------------------------------------------------------------------------------
+POST http://localhost:3000/users/profesor
+------------------------------------------------------------------------------
+Crear profesor con usuario (solo ADMIN)
+
+Body (JSON):
+{
+  "nombres": "string",
+  "apellidos": "string",
+  "carnet": "string (único)",
+  "password": "string",
+  "correo": "string (opcional)",
+  "celular": "string (opcional)",
+  "especialidad": "string (opcional)",
+  "username": "string (opcional)"
+}
+
+Respuesta exitosa (201):
+{
+  "success": true,
+  "data": {
+    "mensaje": "Profesor registrado exitosamente y listo para asignar cargas",
+    "id_profesor": "uuid",
+    "username": "string"
+  }
+}
+
+------------------------------------------------------------------------------
+POST http://localhost:3000/users/vincular
+------------------------------------------------------------------------------
+Vincular padre con estudiante (solo ADMIN)
+
+Body (JSON):
+{
+  "id_padre": "uuid del padre",
+  "id_estudiante": "uuid del estudiante"
+}
+
+Respuesta exitosa (201):
+{
+  "success": true,
+  "data": {
+    "mensaje": "Estudiante y Padre vinculados correctamente",
+    "vinculo": { "id_padre": "...", "id_estudiante": "..." }
+  }
+}
+
+------------------------------------------------------------------------------
+GET http://localhost:3000/users/estudiantes
+------------------------------------------------------------------------------
+Listar todos los estudiantes (ADMIN, PROFESOR)
+
+Query params (opcionales):
+  ?page=1&limit=20
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "data": {
+    "data": [
+      {
+        "id_persona": "uuid",
+        "persona": {
+          "id_persona": "uuid",
+          "nombres": "string",
+          "apellidos": "string",
+          "carnet": "string",
+          "correo": "string",
+          "celular": "string"
+        }
+      },
+      ...
+    ],
+    "meta": {
+      "total": 100,
+      "page": 1,
+      "limit": 20,
+      "totalPages": 5
+    }
+  }
+}
+
+------------------------------------------------------------------------------
+GET http://localhost:3000/users/estudiantes/:id
+------------------------------------------------------------------------------
+Obtener estudiante por ID (ADMIN, PROFESOR, PADRE)
+
+Params:
+  :id = uuid del estudiante
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "data": {
+    "id_persona": "uuid",
+    "codigo_rude": "string",
+    "fecha_nac": "date",
+    "persona": { ... },
+    "tutores": [
+      {
+        "padre": {
+          "persona": { "nombres": "...", "apellidos": "...", "carnet": "..." }
+        }
+      }
+    ]
+  }
+}
+
+------------------------------------------------------------------------------
+GET http://localhost:3000/users/padres
+------------------------------------------------------------------------------
+Listar todos los padres (solo ADMIN)
+
+Query params (opcionales):
+  ?page=1&limit=20
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "data": {
+    "data": [ ... ],
+    "meta": { ... }
+  }
+}
+
+------------------------------------------------------------------------------
+GET http://localhost:3000/users/profesores
+------------------------------------------------------------------------------
+Listar todos los profesores (solo ADMIN)
+
+Query params (opcionales):
+  ?page=1&limit=20
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "data": {
+    "data": [ ... ],
+    "meta": { ... }
+  }
+}
+
+
+================================================================================
+                        ACADEMIC - ADMIN
+================================================================================
+
+Headers requeridos: Authorization: Bearer <token>
+
+------------------------------------------------------------------------------
+POST http://localhost:3000/academic/curso
+------------------------------------------------------------------------------
+Crear curso (solo ADMIN)
+
+Body (JSON):
+{
+  "gestion": "number (año, ej: 2026)",
+  "turno": "string (Mañana/Tarde)",
+  "grado": "string (1ro, 2do, 3ro...)",
+  "paralelo": "string (A, B, C...)",
+  "nivel": "string (Primaria/Secundaria)"
+}
+
+Respuesta exitosa (201):
+{
+  "success": true,
+  "data": {
+    "mensaje": "Curso creado exitosamente",
+    "curso": { "id_curso": 1, ... }
+  }
+}
+
+------------------------------------------------------------------------------
+PUT http://localhost:3000/academic/curso/:id
+------------------------------------------------------------------------------
+Actualizar curso (solo ADMIN)
+
+Params:
+  :id = id del curso (number)
+
+Body (JSON):
+{
+  "gestion": "number",
+  "turno": "string",
+  "grado": "string",
+  "paralelo": "string",
+  "nivel": "string"
+}
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "data": { ...objeto curso actualizado... }
+}
+
+------------------------------------------------------------------------------
+DELETE http://localhost:3000/academic/curso/:id
+------------------------------------------------------------------------------
+Eliminar curso (solo ADMIN)
+
+Params:
+  :id = id del curso (number)
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "message": "Curso eliminado exitosamente"
+}
+
+------------------------------------------------------------------------------
+POST http://localhost:3000/academic/materia
+------------------------------------------------------------------------------
+Crear materia (solo ADMIN)
+
+Body (JSON):
+{
+  "nombre": "string",
+  "area": "string (opcional)"
+}
+
+Respuesta exitosa (201):
+{
+  "success": true,
+  "data": {
+    "mensaje": "Materia creada exitosamente",
+    "materia": { "id_materia": 1, "nombre": "...", "area": "..." }
+  }
+}
+
+------------------------------------------------------------------------------
+PUT http://localhost:3000/academic/materia/:id
+------------------------------------------------------------------------------
+Actualizar materia (solo ADMIN)
+
+Params:
+  :id = id de la materia (number)
+
+Body (JSON):
+{
+  "nombre": "string",
+  "area": "string (opcional)"
+}
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "data": { ...objeto materia actualizado... }
+}
+
+------------------------------------------------------------------------------
+DELETE http://localhost:3000/academic/materia/:id
+------------------------------------------------------------------------------
+Eliminar materia (solo ADMIN)
+
+Params:
+  :id = id de la materia (number)
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "message": "Materia eliminada exitosamente"
+}
+
+------------------------------------------------------------------------------
+POST http://localhost:3000/academic/carga-horaria
+------------------------------------------------------------------------------
+Asignar carga horaria a profesor (solo ADMIN)
+
+Body (JSON):
+{
+  "id_profesor": "uuid",
+  "id_materia": "number",
+  "id_curso": "number"
+}
+
+Respuesta exitosa (201):
+{
+  "success": true,
+  "data": {
+    "mensaje": "Carga horaria asignada exitosamente al profesor",
+    "carga": { ... }
+  }
+}
+
+------------------------------------------------------------------------------
+DELETE http://localhost:3000/academic/carga-horaria/:id
+------------------------------------------------------------------------------
+Eliminar carga horaria (solo ADMIN)
+
+Params:
+  :id = id de la carga (number)
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "message": "Carga horaria eliminada exitosamente"
+}
+
+------------------------------------------------------------------------------
+GET http://localhost:3000/academic/cursos
+------------------------------------------------------------------------------
+Listar cursos (ADMIN, PROFESOR)
+
+Query params (opcionales):
+  ?page=1&limit=20
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "data": {
+    "data": [ ... ],
+    "meta": { "total": 50, "page": 1, "limit": 20, "totalPages": 3 }
+  }
+}
+
+------------------------------------------------------------------------------
+GET http://localhost:3000/academic/cursos/:id
+------------------------------------------------------------------------------
+Obtener curso por ID (ADMIN, PROFESOR)
+
+Params:
+  :id = id del curso (number)
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "data": { "id_curso": 1, "gestion": 2026, ... }
+}
+
+------------------------------------------------------------------------------
+GET http://localhost:3000/academic/materias
+------------------------------------------------------------------------------
+Listar materias (ADMIN, PROFESOR)
+
+Query params (opcionales):
+  ?page=1&limit=20
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "data": {
+    "data": [ ... ],
+    "meta": { ... }
+  }
+}
+
+------------------------------------------------------------------------------
+GET http://localhost:3000/academic/materias/:id
+------------------------------------------------------------------------------
+Obtener materia por ID (ADMIN, PROFESOR)
+
+Params:
+  :id = id de la materia (number)
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "data": { "id_materia": 1, "nombre": "...", "area": "..." }
+}
+
+------------------------------------------------------------------------------
+GET http://localhost:3000/academic/carga-horaria/profesor/:idProfesor
+------------------------------------------------------------------------------
+Obtener cargas de un profesor (ADMIN, PROFESOR)
+
+Params:
+  :idProfesor = uuid del profesor
+
+Query params (opcionales):
+  ?page=1&limit=20
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "data": {
+    "data": [
+      {
+        "id_carga": 1,
+        "materia": { "id_materia": 1, "nombre": "Matemáticas" },
+        "curso": { "id_curso": 1, "grado": "1ro", "paralelo": "A" }
+      }
+    ],
+    "meta": { ... }
+  }
+}
+
+
+================================================================================
+                        ENROLLMENTS - ADMIN
+================================================================================
+
+Headers requeridos: Authorization: Bearer <token>
+
+------------------------------------------------------------------------------
+POST http://localhost:3000/enrollments
+------------------------------------------------------------------------------
+Matricular estudiante en curso (solo ADMIN)
+
+Body (JSON):
+{
+  "id_estudiante": "uuid",
+  "id_curso": "number"
+}
+
+Respuesta exitosa (201):
+{
+  "success": true,
+  "data": {
+    "mensaje": "Estudiante matriculado exitosamente",
+    "inscripcion": { ... }
+  }
+}
+
+------------------------------------------------------------------------------
+GET http://localhost:3000/enrollments
+------------------------------------------------------------------------------
+Listar inscripciones (ADMIN, PROFESOR)
+
+Query params (opcionales):
+  ?page=1&limit=20
+  ?id_curso=1 (filtrar por curso)
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "data": {
+    "data": [
+      {
+        "id_inscripcion": 1,
+        "id_estudiante": "uuid",
+        "id_curso": 1,
+        "fecha_inscripcion": "date",
+        "estado": "EFECTIVO",
+        "estudiante": {
+          "persona": { "nombres": "...", "apellidos": "...", "carnet": "..." }
+        },
+        "curso": { ... }
+      }
+    ],
+    "meta": { ... }
+  }
+}
+
+------------------------------------------------------------------------------
+GET http://localhost:3000/enrollments/estudiante/:id_estudiante
+------------------------------------------------------------------------------
+Obtener inscripciones de un estudiante (ADMIN, PROFESOR, PADRE)
+
+Params:
+  :id_estudiante = uuid del estudiante
+
+Query params (opcionales):
+  ?page=1&limit=20
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "data": {
+    "data": [ ... ],
+    "meta": { ... }
+  }
+}
+
+------------------------------------------------------------------------------
+GET http://localhost:3000/enrollments/:id
+------------------------------------------------------------------------------
+Obtener inscripción por ID (ADMIN, PROFESOR)
+
+Params:
+  :id = id de la inscripción (number)
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "data": { ...objeto inscripción... }
+}
+
+------------------------------------------------------------------------------
+PUT http://localhost:3000/enrollments/:id
+------------------------------------------------------------------------------
+Actualizar estado de inscripción (solo ADMIN)
+
+Params:
+  :id = id de la inscripción (number)
+
+Body (JSON):
+{
+  "estado": "EFECTIVO" | "RETIRADO" | "REPROBADO"
+}
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "data": { ...inscripción actualizada... }
+}
+
+------------------------------------------------------------------------------
+DELETE http://localhost:3000/enrollments/:id
+------------------------------------------------------------------------------
+Eliminar inscripción (solo ADMIN)
+
+Params:
+  :id = id de la inscripción (number)
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "message": "Inscripción eliminada exitosamente"
+}
+
+
+================================================================================
+                        GRADES - ADMIN / PROFESOR
+================================================================================
+
+Headers requeridos: Authorization: Bearer <token>
+
+------------------------------------------------------------------------------
+POST http://localhost:3000/grades/upload
+------------------------------------------------------------------------------
+Subir notas desde CSV (ADMIN, PROFESOR)
+
+Content-Type: multipart/form-data
+
+Body (form-data):
+  file: archivo.csv
+  id_carga: "number (ID de la carga horaria)"
+  "trimestre": "number (1, 2 o 3)"
+
+Formato del CSV:
+carnet,nota_ser,nota_saber,nota_hacer,nota_decidir,autoevaluacion
+o
+id_estudiante,nota_ser,nota_saber,nota_hacer,nota_decidir,autoevaluacion
+
+Ejemplo:
+carnet,nota_ser,nota_saber,nota_hacer,nota_decidir,autoevaluacion
+EMP001,20,25,20,15,10
+EMP002,18,22,19,14,8
+
+Respuesta exitosa (201):
+{
+  "success": true,
+  "data": {
+    "mensaje": "Exito. Se procesaron 2 filas y se guardaron 2 notas",
+    "procesadas": 2,
+    "guardadas": 2,
+    "omitidas": 0
+  }
+}
+
+Errores:
+- 403: El profesor no tiene permiso sobre esta carga
+- 400: Archivo inválido o datos incorrectos
+
+------------------------------------------------------------------------------
+GET http://localhost:3000/grades/estudiante/:id_estudiante
+------------------------------------------------------------------------------
+Obtener notas de un estudiante (ADMIN, PROFESOR, PADRE)
+
+Params:
+  :id_estudiante = uuid del estudiante
+
+Query params (opcionales):
+  ?page=1&limit=20
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "data": {
+    "data": [
+      {
+        "id_calificacion": 1,
+        "trimestre": 1,
+        "nota_ser": 20,
+        "nota_saber": 25,
+        "nota_hacer": 20,
+        "nota_decidir": 15,
+        "autoevaluacion": 10,
+        "nota_final_trimestre": 90,
+        "carga": {
+          "materia": { "id_materia": 1, "nombre": "Matemáticas" },
+          "curso": { "id_curso": 1, "grado": "1ro", "paralelo": "A", "nivel": "Secundaria" }
+        }
+      }
+    ],
+    "meta": { "total": 10, "page": 1, "limit": 20, "totalPages": 1 }
+  }
+}
+
+------------------------------------------------------------------------------
+GET http://localhost:3000/grades/curso/:id_curso
+------------------------------------------------------------------------------
+Obtener notas de un curso (ADMIN, PROFESOR)
+
+Params:
+  :id_curso = id del curso
+
+Query params (opcionales):
+  ?page=1&limit=20
+  ?trimestre=1 (opcional, filtrar por trimestre)
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "data": {
+    "data": [
+      {
+        "id_calificacion": 1,
+        "trimestre": 1,
+        "nota_ser": 20,
+        "nota_saber": 25,
+        "nota_final_trimestre": 90,
+        "inscripcion": {
+          "estudiante": {
+            "persona": { "nombres": "Juan", "apellidos": "Perez", "carnet": "EMP001" }
+          }
+        },
+        "carga": {
+          "materia": { "nombre": "Matemáticas" }
+        }
+      }
+    ],
+    "meta": { ... }
+  }
+}
+
+------------------------------------------------------------------------------
+GET http://localhost:3000/grades/carga/:id_carga
+------------------------------------------------------------------------------
+Obtener notas de una carga horaria (ADMIN, PROFESOR)
+
+Params:
+  :id_carga = id de la carga horaria
+
+Query params (opcionales):
+  ?page=1&limit=20
+  ?trimestre=1 (opcional)
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "data": {
+    "data": [ ... ],
+    "meta": { ... },
+    "info": {
+      "materia": "Matemáticas",
+      "curso": "1ro \"A\""
+    }
+  }
+}
+
+
+================================================================================
+                    COMMUNICATIONS - PROFESOR / PADRE
+================================================================================
+
+Headers requeridos: Authorization: Bearer <token>
+
+------------------------------------------------------------------------------
+POST http://localhost:3000/communications
+------------------------------------------------------------------------------
+Enviar comunicado (solo PROFESOR)
+
+Body (JSON):
+{
+  "id_estudiante": "uuid",
+  "tipo": "FELICITACION" | "INDISCIPLINA" | "CITACION" | "MATERIAL_FALTO",
+  "descripcion": "string"
+}
+
+Respuesta exitosa (201):
+{
+  "success": true,
+  "data": {
+    "mensaje": "Comunicado emitido exitosamente hacia el perfil del estudiante",
+    "data": {
+      "id_comunicado": 1,
+      "id_profesor": "uuid",
+      "id_estudiante": "uuid",
+      "tipo": "INDISCIPLINA",
+      "descripcion": "...",
+      "fecha": "date",
+      "leido_por_padre": false,
+      "estudiante": { "persona": { ... } },
+      "profesor": { "persona": { ... } }
+    }
+  }
+}
+
+------------------------------------------------------------------------------
+GET http://localhost:3000/communications
+------------------------------------------------------------------------------
+Obtener mis comunicados (solo PADRE)
+
+Query params (opcionales):
+  ?page=1&limit=20
+  ?tipo=FELICITACION (opcional, filtrar por tipo)
+  ?leido=true (opcional, filtrar por leido)
+  ?fechaDesde=2026-01-01 (opcional)
+  ?fechaHasta=2026-12-31 (opcional)
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "data": {
+    "data": [
+      {
+        "id_comunicado": 1,
+        "tipo": "FELICITACION",
+        "descripcion": "...",
+        "fecha": "2026-01-15T10:00:00Z",
+        "leido_por_padre": false,
+        "estudiante": {
+          "persona": { "nombres": "Juan", "apellidos": "Perez" }
+        },
+        "profesor": {
+          "persona": { "nombres": "Maria", "apellidos": "Gomez" }
+        }
+      }
+    ],
+    "meta": { "total": 5, "page": 1, "limit": 20, "totalPages": 1 }
+  }
+}
+
+------------------------------------------------------------------------------
+GET http://localhost:3000/communications/estudiante/:id_estudiante
+------------------------------------------------------------------------------
+Obtener comunicados de un estudiante (ADMIN, PROFESOR)
+
+Params:
+  :id_estudiante = uuid del estudiante
+
+Query params (opcionales):
+  ?page=1&limit=20
+  ?tipo=INDISCIPLINA
+  ?leido=false
+  ?fechaDesde=2026-01-01
+  ?fechaHasta=2026-12-31
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "data": {
+    "data": [ ... ],
+    "meta": { ... }
+  }
+}
+
+------------------------------------------------------------------------------
+PATCH http://localhost:3000/communications/:id/leido
+------------------------------------------------------------------------------
+Marcar comunicado como leído (solo PADRE)
+
+Params:
+  :id = id del comunicado (number)
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "data": {
+    "id_comunicado": 1,
+    "leido_por_padre": true,
+    ...
+  }
+}
+
+
+================================================================================
+                           RESUMEN POR ROL
+================================================================================
+
+ADMIN (accesso total):
+  - AUTH: register, login, perfil
+  - USERS: todas las operaciones (estudiantes, padres, profesores, vincular)
+  - ACADEMIC: CRUD completo (cursos, materias, cargas)
+  - ENROLLMENTS: CRUD completo
+  - GRADES: upload, ver notas por estudiante/curso/carga
+  - COMMUNICATIONS: ver comunicados por estudiante
+
+PROFESOR:
+  - AUTH: login, perfil
+  - USERS: ver estudiantes, ver estudiantes por ID
+  - ACADEMIC: ver cursos, materias, cargas propias
+  - ENROLLMENTS: ver inscripciones
+  - GRADES: upload notas (solo de sus cargas), ver notas
+  - COMMUNICATIONS: enviar comunicados, ver por estudiante
+
+PADRE:
+  - AUTH: login, perfil
+  - USERS: ver estudiantes (hijos vinculados)
+  - ENROLLMENTS: ver inscripciones de sus hijos
+  - GRADES: ver notas de sus hijos
+  - COMMUNICATIONS: ver mis comunicados, marcar como leído
+
+================================================================================
+                              NOTAS IMPORTANTES
+================================================================================
+
+1. Todos los endpoints (excepto /auth/register y /auth/login) requieren:
+   Headers: Authorization: Bearer <jwt_token>
+
+2. El token JWT contiene:
+   {
+     "sub": "id_usuario",
+     "rol": "ADMIN | PROFESOR | PADRE",
+     "id_persona": "uuid"
+   }
+
+3. Los endpoints protegidos con @Roles() verifican el rol del token.
+
+4. Las respuestas siguen el formato:
+   { "success": true, "data": {...}, "message"?: "..." }
+
+5. Los errores devuelven:
+   { "success": false, "statusCode": 400, "message": "...", "error": "..." }
+
+6. Para paginación usar ?page=1&limit=20 en endpoints que lo soporten.
+
+================================================================================

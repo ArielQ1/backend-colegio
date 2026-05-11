@@ -1,0 +1,495 @@
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import * as bcrypt from 'bcrypt';
+import { RolUsuario } from '../generated/prisma/enums';
+import { CreatePadreDto } from './dto/create-padre.dto';
+import { VincularFamiliarDto } from './dto/vincular-familiar.dto';
+import { CreateProfesorDto } from './dto/create-profesor.dto';
+import { PaginationDto } from '../common/pagination.dto';
+
+type PrismaKnownError = { code?: string; meta?: { target?: string[] | string } };
+
+@Injectable()
+export class UsersService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async createEstudiante(data: CreateUserDto) {
+    const nombres = data.nombres?.trim();
+    const apellidos = data.apellidos?.trim();
+    const carnet = data.carnet?.trim();
+    const correo = data.correo?.trim() || null;
+    const celular = data.celular?.trim() || null;
+    const codigoRude = data.codigo_rude?.trim() || null;
+
+    if (!nombres || !apellidos || !carnet) {
+      throw new BadRequestException(
+        'nombres, apellidos y carnet son obligatorios',
+      );
+    }
+
+    const fechaNac = this.parseFechaNacimiento(data.fecha_nac);
+
+    const existePersona = await this.prisma.persona.findUnique({
+      where: { carnet },
+      select: { id_persona: true },
+    });
+
+    if (existePersona) {
+      throw new ConflictException(
+        'Ya existe una persona registrada con este carnet',
+      );
+    }
+
+    if (codigoRude) {
+      const existeRude = await this.prisma.estudiante.findUnique({
+        where: { codigo_rude: codigoRude },
+        select: { id_persona: true },
+      });
+
+      if (existeRude) {
+        throw new ConflictException('El codigo RUDE ya está registrado');
+      }
+    }
+
+    try {
+      const nuevoEstudiante = await this.prisma.persona.create({
+        data: {
+          nombres,
+          apellidos,
+          carnet,
+          correo,
+          celular,
+          estudiante: {
+            create: {
+              codigo_rude: codigoRude,
+              fecha_nac: fechaNac,
+            },
+          },
+        },
+        include: {
+          estudiante: true,
+        },
+      });
+
+      return {
+        mensaje: 'Estudiante registrado exitosamente (Sin credenciales de acceso)',
+        datos: nuevoEstudiante,
+      };
+    } catch (error: unknown) {
+      if (this.isUniqueConstraintError(error)) {
+        throw new ConflictException(
+          'El carnet o codigo RUDE ya existe en el sistema',
+        );
+      }
+      throw error;
+    }
+  }
+
+  private parseFechaNacimiento(fecha_nac?: string): Date | null {
+    if (!fecha_nac?.trim()) {
+      return null;
+    }
+
+    const date = new Date(fecha_nac);
+    if (Number.isNaN(date.getTime())) {
+      throw new BadRequestException(
+        'fecha_nac debe tener formato de fecha valido (YYYY-MM-DD)',
+      );
+    }
+
+    return date;
+  }
+
+  private isUniqueConstraintError(error: unknown): boolean {
+    const knownError = error as PrismaKnownError;
+    return knownError?.code === 'P2002';
+  }
+
+  async createPadre(data: CreatePadreDto) {
+    const nombres = data.nombres?.trim();
+    const apellidos = data.apellidos?.trim();
+    const carnet = data.carnet?.trim();
+    const password = data.password?.trim();
+    const username = data.username?.trim() || carnet;
+    const correo = data.correo?.trim() || null;
+    const celular = data.celular?.trim() || null;
+    const parentesco = data.parentesco?.trim() || null;
+
+    if (!nombres || !apellidos || !carnet || !password) {
+      throw new BadRequestException(
+        'nombres, apellidos, carnet y password son obligatorios',
+      );
+    }
+
+    const existePersona = await this.prisma.persona.findUnique({
+      where: { carnet },
+      select: { id_persona: true },
+    });
+
+    if (existePersona) {
+      throw new ConflictException('Este carnet ya está registrado');
+    }
+
+    const existeUsername = await this.prisma.usuario.findUnique({
+      where: { username },
+      select: { id_usuario: true },
+    });
+
+    if (existeUsername) {
+      throw new ConflictException('El nombre de usuario ya está registrado');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    try {
+      const nuevoPadre = await this.prisma.persona.create({
+        data: {
+          nombres,
+          apellidos,
+          carnet,
+          correo,
+          celular,
+          usuario: {
+            create: {
+              username,
+              password_hash: hashedPassword,
+              rol: RolUsuario.PADRE,
+            },
+          },
+          padre_familia: {
+            create: {
+              parentesco,
+            },
+          },
+        },
+        include: {
+          usuario: { select: { username: true, rol: true } },
+          padre_familia: true,
+        },
+      });
+
+      return {
+        mensaje: 'Padre de familia registrado exitosamente',
+        id_padre: nuevoPadre.id_persona,
+        username: nuevoPadre.usuario?.username,
+      };
+    } catch (error: unknown) {
+      if (this.isUniqueConstraintError(error)) {
+        throw new ConflictException(
+          'El carnet o username ya existe en el sistema',
+        );
+      }
+      throw error;
+    }
+  }
+
+  async createProfesor(data: CreateProfesorDto) {
+    const nombres = data.nombres?.trim();
+    const apellidos = data.apellidos?.trim();
+    const carnet = data.carnet?.trim();
+    const password = data.password?.trim();
+    const username = data.username?.trim() || carnet;
+    const correo = data.correo?.trim() || null;
+    const celular = data.celular?.trim() || null;
+    const especialidad = data.especialidad?.trim() || null;
+
+    if (!carnet) {
+      throw new BadRequestException('carnet es obligatorio');
+    }
+
+    const existePersona = await this.prisma.persona.findUnique({
+      where: { carnet },
+      include: {
+        usuario: {
+          select: {
+            username: true,
+            rol: true,
+          },
+        },
+        profesor: {
+          select: {
+            id_persona: true,
+          },
+        },
+      },
+    });
+
+    if (existePersona) {
+      if (existePersona.profesor) {
+        throw new ConflictException('Este carnet ya está registrado como profesor');
+      }
+
+      if (!existePersona.usuario) {
+        throw new ConflictException(
+          'La persona ya existe, pero no tiene usuario para rol profesor',
+        );
+      }
+
+      if (existePersona.usuario.rol !== RolUsuario.PROFESOR) {
+        throw new ConflictException(
+          'Este carnet ya pertenece a un usuario con otro rol',
+        );
+      }
+
+      const perfilProfesor = await this.prisma.profesor.create({
+        data: {
+          id_persona: existePersona.id_persona,
+          especialidad,
+        },
+      });
+
+
+      return {
+        mensaje: 'Perfil de profesor completado exitosamente',
+        id_profesor: perfilProfesor.id_persona,
+        username: existePersona.usuario.username,
+      };
+    }
+
+    if (!nombres || !apellidos || !password) {
+      throw new BadRequestException(
+        'nombres, apellidos y password son obligatorios para registrar un profesor nuevo',
+      );
+    }
+
+    const existeUsername = await this.prisma.usuario.findUnique({
+      where: { username },
+      select: { id_usuario: true },
+    });
+
+    if (existeUsername) {
+      throw new ConflictException('El nombre de usuario ya está registrado');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    try {
+      const nuevoProfesor = await this.prisma.persona.create({
+        data: {
+          nombres,
+          apellidos,
+          carnet,
+          correo,
+          celular,
+          usuario: {
+            create: {
+              username,
+              password_hash: hashedPassword,
+              rol: RolUsuario.PROFESOR,
+            },
+          },
+          profesor: {
+            create: {
+              especialidad,
+            },
+          },
+        },
+        include: {
+          usuario: { select: { username: true, rol: true } },
+          profesor: true,
+        },
+      });
+
+      return {
+        mensaje: 'Profesor registrado exitosamente y listo para asignar cargas',
+        id_profesor: nuevoProfesor.id_persona,
+        username: nuevoProfesor.usuario?.username,
+      };
+    } catch (error: unknown) {
+      if (this.isUniqueConstraintError(error)) {
+        throw new ConflictException(
+          'El carnet o username ya existe en el sistema',
+        );
+      }
+      throw error;
+    }
+  }
+
+  async vincularFamiliar(data: VincularFamiliarDto) {
+    const idPadre = data.id_padre?.trim();
+    const idEstudiante = data.id_estudiante?.trim();
+
+    if (!idPadre || !idEstudiante) {
+      throw new BadRequestException(
+        'id_padre e id_estudiante son obligatorios',
+      );
+    }
+
+    const padre = await this.prisma.padreFamilia.findUnique({
+      where: { id_persona: idPadre },
+      select: { id_persona: true },
+    });
+
+    if (!padre) {
+      throw new NotFoundException(
+        'No existe un padre de familia con ese ID',
+      );
+    }
+
+    const estudiante = await this.prisma.estudiante.findUnique({
+      where: { id_persona: idEstudiante },
+      select: { id_persona: true },
+    });
+
+    if (!estudiante) {
+      throw new NotFoundException('No existe un estudiante con ese ID');
+    }
+
+    const vinculoExistente = await this.prisma.tutorEstudiante.findUnique({
+      where: {
+        id_padre_id_estudiante: {
+          id_padre: idPadre,
+          id_estudiante: idEstudiante,
+        },
+      },
+    });
+
+    if (vinculoExistente) {
+      throw new ConflictException(
+        'Este padre y estudiante ya están vinculados',
+      );
+    }
+
+    try {
+      const vinculo = await this.prisma.tutorEstudiante.create({
+        data: {
+          id_padre: idPadre,
+          id_estudiante: idEstudiante,
+        },
+      });
+
+      return {
+        mensaje: 'Estudiante y Padre vinculados correctamente',
+        vinculo,
+      };
+    } catch (error: unknown) {
+      if (this.isUniqueConstraintError(error)) {
+        throw new ConflictException(
+          'Este padre y estudiante ya están vinculados',
+        );
+      }
+      throw new BadRequestException(
+        'No se pudo crear el vínculo. Verifica que ambos IDs sean válidos',
+      );
+    }
+  }
+
+  async getAllEstudiantes(pagination: PaginationDto) {
+    const page = pagination.page || 1;
+    const limit = pagination.limit || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.estudiante.findMany({
+        skip,
+        take: limit,
+        include: {
+          persona: {
+            select: {
+              id_persona: true,
+              nombres: true,
+              apellidos: true,
+              carnet: true,
+              correo: true,
+              celular: true,
+            },
+          },
+        },
+        orderBy: { persona: { apellidos: 'asc' } },
+      }),
+      this.prisma.estudiante.count(),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+  }
+
+  async getEstudianteById(id: string) {
+    const estudiante = await this.prisma.estudiante.findUnique({
+      where: { id_persona: id },
+      include: {
+        persona: true,
+        tutores: {
+          include: {
+            padre: {
+              include: {
+                persona: { select: { nombres: true, apellidos: true, carnet: true } },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!estudiante) {
+      throw new NotFoundException(`Estudiante con ID ${id} no encontrado`);
+    }
+
+    return { success: true, data: estudiante };
+  }
+
+  async getAllPadres(pagination: PaginationDto) {
+    const page = pagination.page || 1;
+    const limit = pagination.limit || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.padreFamilia.findMany({
+        skip,
+        take: limit,
+        include: {
+          persona: {
+            select: {
+              id_persona: true,
+              nombres: true,
+              apellidos: true,
+              carnet: true,
+              correo: true,
+              celular: true,
+              usuario: { select: { username: true } },
+            },
+          },
+        },
+        orderBy: { persona: { apellidos: 'asc' } },
+      }),
+      this.prisma.padreFamilia.count(),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+  }
+
+  async getAllProfesores(pagination: PaginationDto) {
+    const page = pagination.page || 1;
+    const limit = pagination.limit || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.profesor.findMany({
+        skip,
+        take: limit,
+        include: {
+          persona: {
+            select: {
+              id_persona: true,
+              nombres: true,
+              apellidos: true,
+              carnet: true,
+              correo: true,
+              celular: true,
+              usuario: { select: { username: true } },
+            },
+          },
+        },
+        orderBy: { persona: { apellidos: 'asc' } },
+      }),
+      this.prisma.profesor.count(),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+  }
+}

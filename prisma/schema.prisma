@@ -1,0 +1,184 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ================= ENUMS (Reglas estrictas) =================
+enum RolUsuario {
+  ADMIN
+  PROFESOR
+  PADRE
+  // Eliminamos ESTUDIANTE. Los alumnos no hacen login.
+}
+
+enum EstadoInscripcion {
+  EFECTIVO
+  RETIRADO
+  REPROBADO
+}
+
+enum TipoComunicado {
+  FELICITACION
+  INDISCIPLINA
+  CITACION
+  MATERIAL_FALTO
+}
+
+// ================= 1. IDENTIDAD Y ACCESOS =================
+
+model Persona {
+  id_persona String  @id @default(uuid())
+  nombres    String  @db.VarChar(100)
+  apellidos  String  @db.VarChar(100)
+  carnet     String  @unique @db.VarChar(20)
+  correo     String? @db.VarChar(100)
+  celular    String? @db.VarChar(20)
+
+  // Relaciones (El signo ? indica que son opcionales)
+  usuario       Usuario?      // Solo Admin, Profe y Padre tendrán esto
+  estudiante    Estudiante?
+  padre_familia PadreFamilia?
+  profesor      Profesor?
+}
+
+model Usuario {
+  id_usuario    String     @id @default(uuid())
+  id_persona    String     @unique
+  username      String     @unique @db.VarChar(50)
+  password_hash String     @db.VarChar(255)
+  rol           RolUsuario
+  activo        Boolean    @default(true)
+
+  persona Persona @relation(fields: [id_persona], references: [id_persona], onDelete: Cascade)
+}
+
+// ================= 2. ROLES ESPECÍFICOS =================
+
+model Estudiante {
+  id_persona  String    @id
+  codigo_rude String?   @unique @db.VarChar(50)
+  fecha_nac   DateTime? @db.Date
+
+  persona       Persona           @relation(fields: [id_persona], references: [id_persona], onDelete: Cascade)
+  inscripciones Inscripcion[]
+  comunicados   Comunicado[]
+  tutores       TutorEstudiante[] // Relación con sus padres
+}
+
+model PadreFamilia {
+  id_persona String  @id
+  parentesco String? @db.VarChar(50)
+
+  persona     Persona           @relation(fields: [id_persona], references: [id_persona], onDelete: Cascade)
+  estudiantes TutorEstudiante[] // Relación con sus hijos
+}
+
+model Profesor {
+  id_persona   String  @id
+  especialidad String? @db.VarChar(100)
+
+  persona     Persona        @relation(fields: [id_persona], references: [id_persona], onDelete: Cascade)
+  cargas      CargaHoraria[]
+  comunicados Comunicado[]
+}
+
+// Tabla intermedia para conectar Padres e Hijos
+model TutorEstudiante {
+  id_padre      String
+  id_estudiante String
+
+  padre      PadreFamilia @relation(fields: [id_padre], references: [id_persona], onDelete: Cascade)
+  estudiante Estudiante   @relation(fields: [id_estudiante], references: [id_persona], onDelete: Cascade)
+
+  @@id([id_padre, id_estudiante])
+}
+
+// ================= 3. ESTRUCTURA ACADÉMICA =================
+
+model Curso {
+  id_curso Int    @id @default(autoincrement())
+  gestion  Int
+  turno    String @db.VarChar(20)
+  grado    String @db.VarChar(20)
+  paralelo String @db.VarChar(5)
+  nivel    String @db.VarChar(50)
+
+  inscripciones Inscripcion[]
+  cargas        CargaHoraria[]
+}
+
+model Materia {
+  id_materia Int     @id @default(autoincrement())
+  nombre     String  @db.VarChar(100)
+  area       String? @db.VarChar(100)
+
+  cargas CargaHoraria[]
+}
+
+model CargaHoraria {
+  id_carga    Int @id @default(autoincrement())
+  id_profesor String
+  id_materia  Int
+  id_curso    Int
+
+  profesor       Profesor       @relation(fields: [id_profesor], references: [id_persona], onDelete: Cascade)
+  materia        Materia        @relation(fields: [id_materia], references: [id_materia], onDelete: Cascade)
+  curso          Curso          @relation(fields: [id_curso], references: [id_curso], onDelete: Cascade)
+  calificaciones Calificacion[]
+}
+
+model Inscripcion {
+  id_inscripcion    Int               @id @default(autoincrement())
+  id_estudiante     String
+  id_curso          Int
+  fecha_inscripcion DateTime          @default(now()) @db.Date
+  estado            EstadoInscripcion @default(EFECTIVO)
+
+  estudiante     Estudiante     @relation(fields: [id_estudiante], references: [id_persona], onDelete: Cascade)
+  curso          Curso          @relation(fields: [id_curso], references: [id_curso], onDelete: Cascade)
+  calificaciones Calificacion[]
+}
+
+// ================= 4. TRANSACCIONES (Notas y Avisos) =================
+
+model Calificacion {
+  id_calificacion      Int   @id @default(autoincrement())
+  id_inscripcion       Int
+  id_carga             Int
+  trimestre            Int // 1, 2 o 3
+  nota_ser             Float @default(0)
+  nota_saber           Float @default(0)
+  nota_hacer           Float @default(0)
+  nota_decidir         Float @default(0)
+  autoevaluacion       Float @default(0)
+  nota_final_trimestre Float @default(0)
+
+  inscripcion Inscripcion  @relation(fields: [id_inscripcion], references: [id_inscripcion], onDelete: Cascade)
+  carga       CargaHoraria @relation(fields: [id_carga], references: [id_carga], onDelete: Cascade)
+
+  // Candado de seguridad: Evita notas duplicadas
+  @@unique([id_inscripcion, id_carga, trimestre])
+}
+
+model Comunicado {
+  id_comunicado   Int            @id @default(autoincrement())
+  id_profesor     String
+  id_estudiante   String
+  tipo            TipoComunicado
+  descripcion     String         @db.Text
+  fecha           DateTime       @default(now())
+  leido_por_padre Boolean        @default(false)
+
+  profesor   Profesor   @relation(fields: [id_profesor], references: [id_persona], onDelete: Cascade)
+  estudiante Estudiante @relation(fields: [id_estudiante], references: [id_persona], onDelete: Cascade)
+}
