@@ -5,6 +5,8 @@
 
 /prisma/migrations
 /prisma/seed.ts
+/src/generated
+/generated
 
 # Logs
 logs
