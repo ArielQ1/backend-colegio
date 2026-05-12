@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -380,7 +381,72 @@ export class UsersService {
     }
   }
 
-  async getAllEstudiantes(pagination: PaginationDto) {
+  private async getEstudiantesPorProfesor(idProfesor: string, pagination: PaginationDto) {
+    const gestionActual = new Date().getFullYear();
+    const page = pagination.page || 1;
+    const limit = pagination.limit || 20;
+    const skip = (page - 1) * limit;
+
+    const cargas = await this.prisma.cargaHoraria.findMany({
+      where: {
+        id_profesor: idProfesor,
+        curso: { gestion: gestionActual },
+      },
+      select: { id_curso: true },
+    });
+
+    const idsCursos = cargas.map((c) => c.id_curso);
+
+    if (idsCursos.length === 0) {
+      return { data: [], total: 0, meta: { total: 0, page, limit, totalPages: 0 } };
+    }
+
+    const [data, total] = await Promise.all([
+      this.prisma.estudiante.findMany({
+        where: {
+          inscripciones: {
+            some: {
+              id_curso: { in: idsCursos },
+              estado: 'EFECTIVO',
+            },
+          },
+        },
+        skip,
+        take: limit,
+        include: {
+          persona: {
+            select: {
+              id_persona: true,
+              nombres: true,
+              apellidos: true,
+              carnet: true,
+              correo: true,
+              celular: true,
+            },
+          },
+        },
+        orderBy: { persona: { apellidos: 'asc' } },
+      }),
+      this.prisma.estudiante.count({
+        where: {
+          inscripciones: {
+            some: {
+              id_curso: { in: idsCursos },
+              estado: 'EFECTIVO',
+            },
+          },
+        },
+      }),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+  }
+
+  async getAllEstudiantes(pagination: PaginationDto, idProfesor?: string, rol?: string) {
+    if (rol === 'PROFESOR' && idProfesor) {
+      return this.getEstudiantesPorProfesor(idProfesor, pagination);
+    }
+
     const page = pagination.page || 1;
     const limit = pagination.limit || 20;
     const skip = (page - 1) * limit;
@@ -409,7 +475,40 @@ export class UsersService {
     return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
   }
 
-  async getEstudianteById(id: string) {
+  private async tieneAccesoAEstudiante(idProfesor: string, idEstudiante: string): Promise<boolean> {
+    const gestionActual = new Date().getFullYear();
+
+    const cargasProfesor = await this.prisma.cargaHoraria.findMany({
+      where: {
+        id_profesor: idProfesor,
+        curso: { gestion: gestionActual },
+      },
+      select: { id_curso: true },
+    });
+
+    const idsCursos = cargasProfesor.map((c) => c.id_curso);
+
+    if (idsCursos.length === 0) return false;
+
+    const inscripcion = await this.prisma.inscripcion.findFirst({
+      where: {
+        id_estudiante: idEstudiante,
+        id_curso: { in: idsCursos },
+        estado: 'EFECTIVO',
+      },
+    });
+
+    return !!inscripcion;
+  }
+
+  async getEstudianteById(id: string, idProfesor?: string, rol?: string) {
+    if (rol === 'PROFESOR' && idProfesor) {
+      const tieneAcceso = await this.tieneAccesoAEstudiante(idProfesor, id);
+      if (!tieneAcceso) {
+        throw new ForbiddenException('No tienes acceso a este estudiante');
+      }
+    }
+
     const estudiante = await this.prisma.estudiante.findUnique({
       where: { id_persona: id },
       include: {
@@ -491,5 +590,56 @@ export class UsersService {
     ]);
 
     return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+  }
+
+  async getMisHijos(idPadre: string, pagination: PaginationDto) {
+    const page = pagination.page || 1;
+    const limit = pagination.limit || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.tutorEstudiante.findMany({
+        where: { id_padre: idPadre },
+        skip,
+        take: limit,
+        include: {
+          estudiante: {
+            include: {
+              persona: {
+                select: {
+                  id_persona: true,
+                  nombres: true,
+                  apellidos: true,
+                  carnet: true,
+                  correo: true,
+                  celular: true,
+                },
+              },
+              inscripciones: {
+                where: { estado: 'EFECTIVO' },
+                include: {
+                  curso: {
+                    select: {
+                      id_curso: true,
+                      gestion: true,
+                      grado: true,
+                      paralelo: true,
+                      nivel: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      }),
+      this.prisma.tutorEstudiante.count({ where: { id_padre: idPadre } }),
+    ]);
+
+    const hijos = data.map((tutor) => tutor.estudiante);
+    return {
+      data: hijos,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 }

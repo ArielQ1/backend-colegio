@@ -17,6 +17,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard, Roles } from '../auth/roles.guard';
 import { RolUsuario } from '../generated/prisma/enums';
 import { PaginationDto } from '../common/pagination.dto';
+import { CurrentUser, type CurrentUserPayload } from '../auth/current-user.decorator';
 
 @Controller('enrollments')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -34,9 +35,30 @@ export class EnrollmentsController {
   async getAll(
     @Query() pagination: PaginationDto,
     @Query('id_curso') idCurso?: string,
+    @CurrentUser() user?: CurrentUserPayload,
   ) {
     const cursoId = idCurso ? parseInt(idCurso, 10) : undefined;
-    return await this.enrollmentsService.getAllInscripciones(pagination, cursoId);
+    const idProfesor = user?.rol === 'PROFESOR' ? user.id_persona : undefined;
+    return await this.enrollmentsService.getAllInscripciones(pagination, cursoId, idProfesor, user?.rol);
+  }
+
+  @Get('gestion/:anio')
+  @Roles(RolUsuario.ADMIN, RolUsuario.PROFESOR)
+  async getInscripcionesPorGestion(
+    @Param('anio', ParseIntPipe) anio: number,
+    @Query() pagination: PaginationDto,
+    @Query('id_curso') idCurso?: string,
+    @CurrentUser() user?: CurrentUserPayload,
+  ) {
+    const cursoId = idCurso ? parseInt(idCurso, 10) : undefined;
+    if (user?.rol === 'PROFESOR') {
+      return await this.enrollmentsService.getInscripcionesPorProfesorGestion(user.id_persona, anio, pagination, cursoId);
+    }
+    const inscripciones = await this.enrollmentsService.getAllInscripciones(pagination, cursoId);
+    return {
+      data: inscripciones.data.filter((i: any) => i.curso.gestion === anio),
+      meta: { ...inscripciones.meta, total: inscripciones.data.filter((i: any) => i.curso.gestion === anio).length },
+    };
   }
 
   @Get('estudiante/:id_estudiante')

@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -83,8 +84,66 @@ export class EnrollmentsService {
     }
   }
 
-  async getAllInscripciones(pagination: PaginationDto, idCurso?: number) {
-    const where = idCurso ? { id_curso: idCurso } : {};
+  async getAllInscripciones(pagination: PaginationDto, idCurso?: number, idProfesor?: string, rol?: string) {
+    let where: any = idCurso ? { id_curso: idCurso } : {};
+
+    if (rol === 'PROFESOR' && idProfesor) {
+      const gestionActual = new Date().getFullYear();
+      const cargas = await this.prisma.cargaHoraria.findMany({
+        where: {
+          id_profesor: idProfesor,
+          curso: { gestion: gestionActual },
+        },
+        select: { id_curso: true },
+      });
+      const idsCursos = cargas.map((c) => c.id_curso);
+      where = { ...where, id_curso: { in: idsCursos } };
+    }
+
+    const page = pagination.page || 1;
+    const limit = pagination.limit || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.inscripcion.findMany({
+        where,
+        skip,
+        take: limit,
+        include: {
+          estudiante: {
+            include: {
+              persona: {
+                select: { nombres: true, apellidos: true, carnet: true },
+              },
+            },
+          },
+          curso: true,
+        },
+        orderBy: { fecha_inscripcion: 'desc' },
+      }),
+      this.prisma.inscripcion.count({ where }),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+  }
+
+  async getInscripcionesPorProfesorGestion(idProfesor: string, gestion: number, pagination: PaginationDto, idCurso?: number) {
+    const cargas = await this.prisma.cargaHoraria.findMany({
+      where: {
+        id_profesor: idProfesor,
+        curso: { gestion },
+      },
+      select: { id_curso: true },
+    });
+
+    const idsCursos = cargas.map((c) => c.id_curso);
+    if (idsCursos.length === 0) {
+      return { data: [], meta: { total: 0, page: 1, limit: 20, totalPages: 0 } };
+    }
+
+    const where: any = { id_curso: { in: idsCursos } };
+    if (idCurso) where.id_curso = idCurso;
+
     const page = pagination.page || 1;
     const limit = pagination.limit || 20;
     const skip = (page - 1) * limit;

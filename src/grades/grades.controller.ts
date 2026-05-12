@@ -10,6 +10,7 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Request as ExpressRequest } from 'express';
@@ -18,6 +19,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard, Roles } from '../auth/roles.guard';
 import { RolUsuario } from '../generated/prisma/enums';
 import { PaginationDto } from '../common/pagination.dto';
+import { CurrentUser, type CurrentUserPayload } from '../auth/current-user.decorator';
 
 type AuthenticatedRequest = ExpressRequest & {
   user?: {
@@ -73,21 +75,39 @@ export class GradesController {
   async getNotasPorEstudiante(
     @Param('id_estudiante') idEstudiante: string,
     @Query() pagination: PaginationDto,
+    @CurrentUser() user: CurrentUserPayload,
   ) {
-    return await this.gradesService.getNotasPorEstudiante(idEstudiante, pagination);
+    const idProfesor = user.rol === 'PROFESOR' ? user.id_persona : undefined;
+    return await this.gradesService.getNotasPorEstudiante(idEstudiante, pagination, idProfesor, user.rol);
   }
 
   @Get('curso/:id_curso')
   @Roles(RolUsuario.ADMIN, RolUsuario.PROFESOR)
   async getNotasPorCurso(
-    @Query('id_curso') idCurso: string,
+    @Param('id_curso', ParseIntPipe) idCurso: number,
     @Query() pagination: PaginationDto,
     @Query('trimestre') trimestre?: string,
+    @CurrentUser() user?: CurrentUserPayload,
   ) {
-    const cursoId = Number.parseInt(idCurso, 10);
-    if (Number.isNaN(cursoId)) {
-      throw new BadRequestException('ID de curso inválido');
+    const trim = trimestre ? Number.parseInt(trimestre, 10) : undefined;
+    const idProfesor = user?.rol === 'PROFESOR' ? user.id_persona : undefined;
+    return await this.gradesService.getNotasPorCurso(idCurso, pagination, trim, idProfesor, user?.rol);
+  }
+
+  @Get('curso/:id_curso/gestion/:anio')
+  @Roles(RolUsuario.ADMIN, RolUsuario.PROFESOR)
+  async getNotasPorCursoGestion(
+    @Param('id_curso', ParseIntPipe) idCurso: number,
+    @Param('anio', ParseIntPipe) anio: number,
+    @Query() pagination: PaginationDto,
+    @Query('trimestre') trimestre?: string,
+    @CurrentUser() user?: CurrentUserPayload,
+  ) {
+    if (user?.rol === 'PROFESOR') {
+      const trim = trimestre ? Number.parseInt(trimestre, 10) : undefined;
+      return await this.gradesService.getNotasPorCursoGestion(user.id_persona, anio, pagination, trim);
     }
+    const cursoId = Number.parseInt(String(idCurso), 10);
     const trim = trimestre ? Number.parseInt(trimestre, 10) : undefined;
     return await this.gradesService.getNotasPorCurso(cursoId, pagination, trim);
   }
@@ -95,15 +115,13 @@ export class GradesController {
   @Get('carga/:id_carga')
   @Roles(RolUsuario.ADMIN, RolUsuario.PROFESOR)
   async getNotasPorCarga(
-    @Query('id_carga') idCarga: string,
+    @Param('id_carga', ParseIntPipe) idCarga: number,
     @Query() pagination: PaginationDto,
     @Query('trimestre') trimestre?: string,
+    @CurrentUser() user?: CurrentUserPayload,
   ) {
-    const cargaId = Number.parseInt(idCarga, 10);
-    if (Number.isNaN(cargaId)) {
-      throw new BadRequestException('ID de carga inválido');
-    }
     const trim = trimestre ? Number.parseInt(trimestre, 10) : undefined;
-    return await this.gradesService.getNotasPorCarga(cargaId, pagination, trim);
+    const idProfesor = user?.rol === 'PROFESOR' ? user.id_persona : undefined;
+    return await this.gradesService.getNotasPorCarga(idCarga, pagination, trim, idProfesor, user?.rol);
   }
 }

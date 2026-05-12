@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -205,13 +206,28 @@ export class AcademicService {
     }
   }
 
-  async getAllCursos(pagination: PaginationDto) {
+  async getAllCursos(pagination: PaginationDto, idProfesor?: string, rol?: string) {
+    const gestionActual = new Date().getFullYear();
     const page = pagination.page || 1;
     const limit = pagination.limit || 20;
     const skip = (page - 1) * limit;
 
+    let where: any = {};
+
+    if (rol === 'PROFESOR' && idProfesor) {
+      const cargas = await this.prisma.cargaHoraria.findMany({
+        where: {
+          id_profesor: idProfesor,
+          curso: { gestion: gestionActual },
+        },
+        select: { id_curso: true },
+      });
+      where = { id_curso: { in: cargas.map((c) => c.id_curso) } };
+    }
+
     const [data, total] = await Promise.all([
       this.prisma.curso.findMany({
+        where,
         skip,
         take: limit,
         orderBy: [
@@ -221,7 +237,7 @@ export class AcademicService {
           { paralelo: 'asc' },
         ],
       }),
-      this.prisma.curso.count(),
+      this.prisma.curso.count({ where }),
     ]);
 
     return {
@@ -230,18 +246,114 @@ export class AcademicService {
     };
   }
 
-  async getAllMaterias(pagination: PaginationDto) {
+  async getAllMaterias(pagination: PaginationDto, idProfesor?: string, rol?: string) {
+    const gestionActual = new Date().getFullYear();
     const page = pagination.page || 1;
     const limit = pagination.limit || 20;
     const skip = (page - 1) * limit;
 
+    let where: any = {};
+
+    if (rol === 'PROFESOR' && idProfesor) {
+      const cargas = await this.prisma.cargaHoraria.findMany({
+        where: {
+          id_profesor: idProfesor,
+          curso: { gestion: gestionActual },
+        },
+        select: { id_materia: true },
+      });
+      const idsMaterias = [...new Set(cargas.map((c) => c.id_materia))];
+      where = { id_materia: { in: idsMaterias } };
+    }
+
     const [data, total] = await Promise.all([
       this.prisma.materia.findMany({
+        where,
         skip,
         take: limit,
         orderBy: { nombre: 'asc' },
       }),
-      this.prisma.materia.count(),
+      this.prisma.materia.count({ where }),
+    ]);
+
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
+  }
+
+  async getCursosPorProfesorGestion(idProfesor: string, gestion: number, pagination: PaginationDto) {
+    const page = pagination.page || 1;
+    const limit = pagination.limit || 20;
+    const skip = (page - 1) * limit;
+
+    const cargas = await this.prisma.cargaHoraria.findMany({
+      where: {
+        id_profesor: idProfesor,
+        curso: { gestion },
+      },
+      select: { id_curso: true },
+    });
+
+    const idsCursos = [...new Set(cargas.map((c) => c.id_curso))];
+
+    if (idsCursos.length === 0) {
+      return {
+        data: [],
+        meta: { total: 0, page, limit, totalPages: 0 },
+      };
+    }
+
+    const [data, total] = await Promise.all([
+      this.prisma.curso.findMany({
+        where: { id_curso: { in: idsCursos } },
+        skip,
+        take: limit,
+        orderBy: [
+          { nivel: 'asc' },
+          { grado: 'asc' },
+          { paralelo: 'asc' },
+        ],
+      }),
+      this.prisma.curso.count({ where: { id_curso: { in: idsCursos } } }),
+    ]);
+
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
+  }
+
+  async getMateriasPorProfesorGestion(idProfesor: string, gestion: number, pagination: PaginationDto) {
+    const page = pagination.page || 1;
+    const limit = pagination.limit || 20;
+    const skip = (page - 1) * limit;
+
+    const cargas = await this.prisma.cargaHoraria.findMany({
+      where: {
+        id_profesor: idProfesor,
+        curso: { gestion },
+      },
+      select: { id_materia: true },
+    });
+
+    const idsMaterias = [...new Set(cargas.map((c) => c.id_materia))];
+
+    if (idsMaterias.length === 0) {
+      return {
+        data: [],
+        meta: { total: 0, page, limit, totalPages: 0 },
+      };
+    }
+
+    const [data, total] = await Promise.all([
+      this.prisma.materia.findMany({
+        where: { id_materia: { in: idsMaterias } },
+        skip,
+        take: limit,
+        orderBy: { nombre: 'asc' },
+      }),
+      this.prisma.materia.count({ where: { id_materia: { in: idsMaterias } } }),
     ]);
 
     return {

@@ -1,4 +1,5 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { RolUsuario } from '../generated/prisma/enums';
 import { PrismaService } from '../prisma/prisma.service';
 import csv from 'csv-parser';
 import { Readable } from 'stream';
@@ -19,7 +20,39 @@ type CsvGradeRow = {
 export class GradesService {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async getNotasPorEstudiante(idEstudiante: string, pagination: PaginationDto) {
+	private async tieneAccesoAEstudiante(idProfesor: string, idEstudiante: string): Promise<boolean> {
+		const gestionActual = new Date().getFullYear();
+
+		const cargasProfesor = await this.prisma.cargaHoraria.findMany({
+			where: {
+				id_profesor: idProfesor,
+				curso: { gestion: gestionActual },
+			},
+			select: { id_curso: true },
+		});
+
+		const idsCursos = cargasProfesor.map((c) => c.id_curso);
+		if (idsCursos.length === 0) return false;
+
+		const inscripcion = await this.prisma.inscripcion.findFirst({
+			where: {
+				id_estudiante: idEstudiante,
+				id_curso: { in: idsCursos },
+				estado: 'EFECTIVO',
+			},
+		});
+
+		return !!inscripcion;
+	}
+
+	async getNotasPorEstudiante(idEstudiante: string, pagination: PaginationDto, idProfesor?: string, rol?: string) {
+		if (rol === RolUsuario.PROFESOR && idProfesor) {
+			const tieneAcceso = await this.tieneAccesoAEstudiante(idProfesor, idEstudiante);
+			if (!tieneAcceso) {
+				throw new ForbiddenException('No tienes acceso a las notas de este estudiante');
+			}
+		}
+
 		const estudiante = await this.prisma.estudiante.findUnique({
 			where: { id_persona: idEstudiante },
 		});
@@ -57,10 +90,31 @@ export class GradesService {
 		return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
 	}
 
-	async getNotasPorCurso(idCurso: number, pagination: PaginationDto, trimestre?: number) {
+	private async tieneAccesoACurso(idProfesor: string, idCurso: number): Promise<boolean> {
+		const gestionActual = new Date().getFullYear();
+
+		const carga = await this.prisma.cargaHoraria.findFirst({
+			where: {
+				id_profesor: idProfesor,
+				id_curso: idCurso,
+				curso: { gestion: gestionActual },
+			},
+		});
+
+		return !!carga;
+	}
+
+	async getNotasPorCurso(idCurso: number, pagination: PaginationDto, trimestre?: number, idProfesor?: string, rol?: string) {
 		const curso = await this.prisma.curso.findUnique({ where: { id_curso: idCurso } });
 		if (!curso) {
 			throw new NotFoundException(`Curso con ID ${idCurso} no encontrado`);
+		}
+
+		if (rol === RolUsuario.PROFESOR && idProfesor) {
+			const tieneAcceso = await this.tieneAccesoACurso(idProfesor, idCurso);
+			if (!tieneAcceso) {
+				throw new ForbiddenException('No tienes acceso a las notas de este curso');
+			}
 		}
 
 		const where: any = { inscripcion: { id_curso: idCurso } };
@@ -95,7 +149,64 @@ export class GradesService {
 		return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
 	}
 
-	async getNotasPorCarga(idCarga: number, pagination: PaginationDto, trimestre?: number) {
+	async getNotasPorCursoGestion(idProfesor: string, gestion: number, pagination: PaginationDto, trimestre?: number) {
+		const cargas = await this.prisma.cargaHoraria.findMany({
+			where: {
+				id_profesor: idProfesor,
+				curso: { gestion },
+			},
+			select: { id_carga: true, id_curso: true },
+		});
+
+		const idsCursos = [...new Set(cargas.map((c) => c.id_curso))];
+		const idsCargas = cargas.map((c) => c.id_carga);
+
+		if (idsCargas.length === 0) {
+			return { data: [], meta: { total: 0, page: 1, limit: 20, totalPages: 0 } };
+		}
+
+		const where: any = {
+			OR: [
+				{ inscripcion: { id_curso: { in: idsCursos } } },
+				{ id_carga: { in: idsCargas } },
+			],
+		};
+		if (trimestre) where.trimestre = trimestre;
+
+		const page = pagination.page || 1;
+		const limit = pagination.limit || 20;
+		const skip = (page - 1) * limit;
+
+		const [data, total] = await Promise.all([
+			this.prisma.calificacion.findMany({
+				where,
+				skip,
+				take: limit,
+				include: {
+					inscripcion: {
+						include: {
+							estudiante: {
+								include: { persona: { select: { nombres: true, apellidos: true, carnet: true } } },
+							},
+						},
+					},
+					carga: {
+						include: { materia: { select: { nombre: true } }, curso: { select: { grado: true, paralelo: true } } },
+					},
+				},
+				orderBy: [
+					{ carga: { curso: { grado: 'asc' } } },
+					{ carga: { materia: { nombre: 'asc' } } },
+					{ inscripcion: { estudiante: { persona: { apellidos: 'asc' } } } },
+				],
+			}),
+			this.prisma.calificacion.count({ where }),
+		]);
+
+		return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+	}
+
+	async getNotasPorCarga(idCarga: number, pagination: PaginationDto, trimestre?: number, idProfesor?: string, rol?: string) {
 		const carga = await this.prisma.cargaHoraria.findUnique({
 			where: { id_carga: idCarga },
 			include: { materia: true, curso: true },
@@ -103,6 +214,12 @@ export class GradesService {
 
 		if (!carga) {
 			throw new NotFoundException(`Carga horaria con ID ${idCarga} no encontrada`);
+		}
+
+		if (rol === RolUsuario.PROFESOR && idProfesor) {
+			if (carga.id_profesor !== idProfesor) {
+				throw new ForbiddenException('No tienes acceso a las notas de esta carga horaria');
+			}
 		}
 
 		const where: any = { id_carga: idCarga };

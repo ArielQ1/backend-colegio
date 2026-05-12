@@ -18,6 +18,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard, Roles } from '../auth/roles.guard';
 import { RolUsuario } from '../generated/prisma/enums';
 import { PaginationDto } from '../common/pagination.dto';
+import { CurrentUser, type CurrentUserPayload } from '../auth/current-user.decorator';
 
 @Controller('academic')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -80,9 +81,27 @@ export class AcademicController {
 
   @Get('cursos')
   @Roles(RolUsuario.ADMIN, RolUsuario.PROFESOR)
-  async getAllCursos(@Query() pagination: PaginationDto) {
-    const cursos = await this.academicService.getAllCursos(pagination);
-    return cursos;
+  async getAllCursos(
+    @Query() pagination: PaginationDto,
+    @CurrentUser() user: CurrentUserPayload,
+  ) {
+    const idProfesor = user.rol === 'PROFESOR' ? user.id_persona : undefined;
+    return await this.academicService.getAllCursos(pagination, idProfesor, user.rol);
+  }
+
+  @Get('cursos/gestion/:anio')
+  @Roles(RolUsuario.ADMIN, RolUsuario.PROFESOR)
+  async getCursosPorGestion(
+    @Param('anio', ParseIntPipe) anio: number,
+    @Query() pagination: PaginationDto,
+    @CurrentUser() user: CurrentUserPayload,
+  ) {
+    if (user.rol === 'PROFESOR') {
+      return await this.academicService.getCursosPorProfesorGestion(user.id_persona, anio, pagination);
+    }
+    const cursos = await this.academicService.getAllCursos(pagination, undefined, 'ADMIN');
+    const cursosFiltrados = cursos.data.filter((c: any) => c.gestion === anio);
+    return { data: cursosFiltrados, meta: { ...cursos.meta, total: cursosFiltrados.length } };
   }
 
   @Get('cursos/:id')
@@ -94,9 +113,25 @@ export class AcademicController {
 
   @Get('materias')
   @Roles(RolUsuario.ADMIN, RolUsuario.PROFESOR)
-  async getAllMaterias(@Query() pagination: PaginationDto) {
-    const materias = await this.academicService.getAllMaterias(pagination);
-    return materias;
+  async getAllMaterias(
+    @Query() pagination: PaginationDto,
+    @CurrentUser() user: CurrentUserPayload,
+  ) {
+    const idProfesor = user.rol === 'PROFESOR' ? user.id_persona : undefined;
+    return await this.academicService.getAllMaterias(pagination, idProfesor, user.rol);
+  }
+
+  @Get('materias/gestion/:anio')
+  @Roles(RolUsuario.ADMIN, RolUsuario.PROFESOR)
+  async getMateriasPorGestion(
+    @Param('anio', ParseIntPipe) anio: number,
+    @Query() pagination: PaginationDto,
+    @CurrentUser() user: CurrentUserPayload,
+  ) {
+    if (user.rol === 'PROFESOR') {
+      return await this.academicService.getMateriasPorProfesorGestion(user.id_persona, anio, pagination);
+    }
+    return await this.academicService.getAllMaterias(pagination);
   }
 
   @Get('materias/:id')
@@ -114,5 +149,14 @@ export class AcademicController {
   ) {
     const cargas = await this.academicService.getCargasPorProfesor(idProfesor, pagination);
     return cargas;
+  }
+
+  @Get('carga-horaria/mis-cargas')
+  @Roles(RolUsuario.PROFESOR)
+  async getMisCargas(
+    @Query() pagination: PaginationDto,
+    @CurrentUser() user: CurrentUserPayload,
+  ) {
+    return await this.academicService.getCargasPorProfesor(user.id_persona, pagination);
   }
 }

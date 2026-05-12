@@ -15,6 +15,7 @@ import { CreatePadreDto } from './dto/create-padre.dto';
 import { VincularFamiliarDto } from './dto/vincular-familiar.dto';
 import { CreateProfesorDto } from './dto/create-profesor.dto';
 import { PaginationDto } from '../common/pagination.dto';
+import { CurrentUser, type CurrentUserPayload } from '../auth/current-user.decorator';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -47,14 +48,31 @@ export class UsersController {
 
   @Get('estudiantes')
   @Roles(RolUsuario.ADMIN, RolUsuario.PROFESOR)
-  async getAllEstudiantes(@Query() pagination: PaginationDto) {
-    return await this.usersService.getAllEstudiantes(pagination);
+  async getAllEstudiantes(
+    @Query() pagination: PaginationDto,
+    @CurrentUser() user: CurrentUserPayload,
+  ) {
+    const idProfesor = user.rol === 'PROFESOR' ? user.id_persona : undefined;
+    return await this.usersService.getAllEstudiantes(pagination, idProfesor, user.rol);
+  }
+
+  @Get('estudiantes/mis-hijos')
+  @Roles(RolUsuario.PADRE)
+  async getMisHijos(
+    @Query() pagination: PaginationDto,
+    @CurrentUser() user: CurrentUserPayload,
+  ) {
+    return await this.usersService.getMisHijos(user.id_persona, pagination);
   }
 
   @Get('estudiantes/:id')
   @Roles(RolUsuario.ADMIN, RolUsuario.PROFESOR, RolUsuario.PADRE)
-  async getEstudianteById(@Query('id') id: string) {
-    return await this.usersService.getEstudianteById(id);
+  async getEstudianteById(
+    @Query('id') id: string,
+    @CurrentUser() user: CurrentUserPayload,
+  ) {
+    const idProfesor = user.rol === 'PROFESOR' ? user.id_persona : undefined;
+    return await this.usersService.getEstudianteById(id, idProfesor, user.rol);
   }
 
   @Get('padres')

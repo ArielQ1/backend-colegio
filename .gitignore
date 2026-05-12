@@ -6,7 +6,7 @@
 /prisma/migrations
 /prisma/seed.ts
 /src/generated
-/generated
+/endpoints
 
 # Logs
 logs
