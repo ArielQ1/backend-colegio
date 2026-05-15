@@ -5,6 +5,8 @@ import csv from 'csv-parser';
 import { Readable } from 'stream';
 import { Express } from 'express';
 import { PaginationDto } from '../common/pagination.dto';
+import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 
 type CsvGradeRow = {
 	carnet?: string;
@@ -255,7 +257,7 @@ export class GradesService {
 		};
 	}
 
-	async uploadGradesCsv(
+async uploadGradesCsv(
 		file: Express.Multer.File,
 		id_carga: number,
 		trimestre: number,
@@ -263,7 +265,7 @@ export class GradesService {
 		rol?: string,
 	) {
 		if (!file) {
-			throw new BadRequestException('No se envio ningun archivo CSV');
+			throw new BadRequestException('No se envio ningun archivo');
 		}
 
 		if (!Number.isInteger(id_carga) || id_carga <= 0) {
@@ -289,7 +291,21 @@ export class GradesService {
 			}
 		}
 
-		const filas = await this.parseCsvBuffer(file.buffer);
+		const filename = file.originalname.toLowerCase();
+		const isExcel = filename.endsWith('.xlsx') || filename.endsWith('.xls');
+		const isCsv = filename.endsWith('.csv');
+
+		if (!isExcel && !isCsv) {
+			throw new BadRequestException('El archivo debe ser .xlsx, .xls o .csv');
+		}
+
+		let filas: CsvGradeRow[];
+
+		if (isExcel) {
+			filas = await this.parseExcelBuffer(file.buffer);
+		} else {
+			filas = await this.parseCsvBuffer(file.buffer);
+		}
 
 		const resultado = await this.procesarYGuardarNotas(
 			filas,
@@ -319,6 +335,50 @@ export class GradesService {
 					reject(new BadRequestException('Error leyendo el archivo CSV'));
 				});
 		});
+	}
+
+	private async parseExcelBuffer(buffer: Buffer): Promise<CsvGradeRow[]> {
+		const workbook = new ExcelJS.Workbook();
+		await workbook.xlsx.load(buffer.buffer as ArrayBuffer);
+
+		const sheet = workbook.getWorksheet('Estudiantes');
+		if (!sheet) {
+			throw new BadRequestException('No se encontró la hoja "Estudiantes" en el Excel');
+		}
+
+		const filas: CsvGradeRow[] = [];
+		const headerRow = sheet.getRow(1);
+		const headerMap: Record<string, number> = {};
+
+		headerRow.eachCell((cell, colNumber) => {
+			headerMap[String(cell.value).toLowerCase().trim()] = colNumber;
+		});
+
+		const requiredHeaders = ['carnet', 'id_estudiante', 'nombres', 'apellidos'];
+		for (const h of requiredHeaders) {
+			if (!headerMap[h]) {
+				throw new BadRequestException(`Falta la columna "${h}" en el Excel`);
+			}
+		}
+
+		sheet.eachRow((row, rowNumber) => {
+			if (rowNumber === 1) return;
+
+			const rowData: CsvGradeRow = {};
+			if (headerMap['carnet']) rowData.carnet = String(row.getCell(headerMap['carnet']).value || '');
+			if (headerMap['id_estudiante']) rowData.id_estudiante = String(row.getCell(headerMap['id_estudiante']).value || '');
+			if (headerMap['nota_ser']) rowData.nota_ser = String(row.getCell(headerMap['nota_ser']).value || '');
+			if (headerMap['nota_saber']) rowData.nota_saber = String(row.getCell(headerMap['nota_saber']).value || '');
+			if (headerMap['nota_hacer']) rowData.nota_hacer = String(row.getCell(headerMap['nota_hacer']).value || '');
+			if (headerMap['nota_decidir']) rowData.nota_decidir = String(row.getCell(headerMap['nota_decidir']).value || '');
+			if (headerMap['autoevaluacion']) rowData.autoevaluacion = String(row.getCell(headerMap['autoevaluacion']).value || '');
+
+			if (rowData.carnet || rowData.id_estudiante) {
+				filas.push(rowData);
+			}
+		});
+
+		return filas;
 	}
 
 	private async procesarYGuardarNotas(
@@ -427,5 +487,192 @@ export class GradesService {
 
 		const parsed = Number.parseFloat(value);
 		return Number.isNaN(parsed) ? 0 : parsed;
+	}
+
+	async generarPlantillaExcel(idCarga: number, trimestre: number, idProfesor?: string, rol?: string) {
+		if (![1, 2, 3].includes(trimestre)) {
+			throw new BadRequestException('trimestre debe ser 1, 2 o 3');
+		}
+
+		const carga = await this.prisma.cargaHoraria.findUnique({
+			where: { id_carga: idCarga },
+			include: {
+				materia: true,
+				curso: true,
+				profesor: {
+					include: {
+						persona: { select: { nombres: true, apellidos: true } },
+					},
+				},
+			},
+		});
+
+		if (!carga) {
+			throw new NotFoundException(`Carga horaria con ID ${idCarga} no encontrada`);
+		}
+
+		if (rol === RolUsuario.PROFESOR && idProfesor && carga.id_profesor !== idProfesor) {
+			throw new ForbiddenException('No tienes acceso a esta carga horaria');
+		}
+
+		const nombreColegio = process.env.NOMBRE_COLEGIO || 'Colegio';
+		const nombreProfesor = `${carga.profesor.persona.nombres} ${carga.profesor.persona.apellidos}`;
+		const nombreCurso = `${carga.curso.grado} "${carga.curso.paralelo}"`;
+		const nombreMateria = carga.materia.nombre;
+		const gestion = carga.curso.gestion;
+
+		const estudiantes = await this.prisma.inscripcion.findMany({
+			where: {
+				id_curso: carga.id_curso,
+				estado: 'EFECTIVO',
+			},
+			include: {
+				estudiante: {
+					include: {
+						persona: { select: { carnet: true, nombres: true, apellidos: true } },
+					},
+				},
+			},
+			orderBy: {
+				estudiante: {
+					persona: { apellidos: 'asc' },
+				},
+			},
+		});
+
+		const workbook = new ExcelJS.Workbook();
+		workbook.creator = 'Backend Colegio';
+		workbook.created = new Date();
+
+		const headerBlue = {
+			type: 'pattern' as const,
+			pattern: 'solid' as const,
+			fgColor: { argb: 'FF1E4E79' },
+		};
+		const headerFont = { bold: true, color: { argb: 'FFFFFFFF' }, size: 11 };
+		const infoHeaderFill = { type: 'pattern' as const, pattern: 'solid' as const, fgColor: { argb: 'FFE8E8E8' } };
+		const infoFont = { bold: true, size: 10 };
+		const thinBorder = {
+			top: { style: 'thin' as const },
+			left: { style: 'thin' as const },
+			bottom: { style: 'thin' as const },
+			right: { style: 'thin' as const },
+		};
+
+		const wsInfo = workbook.addWorksheet('Info');
+		wsInfo.columns = [{ width: 20 }, { width: 40 }];
+		const infoData = [
+			['CAMPO', 'VALOR'],
+			['Colegio', nombreColegio],
+			['Gestión', gestion.toString()],
+			['Materia', nombreMateria],
+			['Curso', nombreCurso],
+			['Profesor', nombreProfesor],
+			['Trimestre', trimestre.toString()],
+			['Fecha generación', new Date().toLocaleDateString('es-BO')],
+		];
+		infoData.forEach((row, idx) => {
+			const cell = wsInfo.addRow(row);
+			if (idx === 0) {
+				cell.eachCell((c) => {
+					c.fill = infoHeaderFill;
+					c.font = infoFont;
+					c.border = thinBorder;
+				});
+			} else {
+				cell.eachCell((c) => {
+					c.border = thinBorder;
+					c.font = { size: 10 };
+				});
+			}
+		});
+
+		const wsEstudiantes = workbook.addWorksheet('Estudiantes');
+		wsEstudiantes.columns = [
+			{ header: 'carnet', key: 'carnet', width: 15 },
+			{ header: 'id_estudiante', key: 'id_estudiante', width: 40 },
+			{ header: 'nombres', key: 'nombres', width: 25 },
+			{ header: 'apellidos', key: 'apellidos', width: 25 },
+			{ header: 'nota_ser', key: 'nota_ser', width: 12 },
+			{ header: 'nota_saber', key: 'nota_saber', width: 12 },
+			{ header: 'nota_hacer', key: 'nota_hacer', width: 12 },
+			{ header: 'nota_decidir', key: 'nota_decidir', width: 14 },
+			{ header: 'autoevaluacion', key: 'autoevaluacion', width: 16 },
+		];
+		const headerRow = wsEstudiantes.getRow(1);
+		headerRow.font = headerFont;
+		headerRow.fill = headerBlue;
+		headerRow.height = 25;
+		headerRow.eachCell((cell) => {
+			cell.border = thinBorder;
+			cell.alignment = { horizontal: 'center', vertical: 'middle' };
+		});
+
+		estudiantes.forEach((insc) => {
+			const row = wsEstudiantes.addRow({
+				carnet: insc.estudiante.persona.carnet,
+				id_estudiante: insc.id_estudiante,
+				nombres: insc.estudiante.persona.nombres,
+				apellidos: insc.estudiante.persona.apellidos,
+				nota_ser: '',
+				nota_saber: '',
+				nota_hacer: '',
+				nota_decidir: '',
+				autoevaluacion: '',
+			});
+			row.eachCell((cell, colNumber) => {
+				cell.border = thinBorder;
+				const notaColumns = [5, 6, 7, 8, 9];
+				if (notaColumns.includes(colNumber)) {
+					cell.fill = { type: 'pattern' as const, pattern: 'solid' as const, fgColor: { argb: 'FFFFF9C4' } };
+					cell.alignment = { horizontal: 'center' as const };
+				}
+			});
+		});
+		wsEstudiantes.views = [{ state: 'frozen', ySplit: 1 }];
+
+		const wsInstrucciones = workbook.addWorksheet('Instrucciones');
+		wsInstrucciones.columns = [{ width: 8 }, { width: 70 }];
+		const instrData = [
+			['PASO', 'DESCRIPCIÓN'],
+			['1', 'Llena las columnas de notas (nota_ser, nota_saber, nota_hacer, nota_decidir, autoevaluacion) con valores numéricos'],
+			['2', 'Cada nota debe ser un número. Deja vacío si no hay nota'],
+			['3', 'NO modifiques las columnas: carnet, id_estudiante, nombres, apellidos'],
+			['4', 'NO modifiques las filas de estudiantes'],
+			['5', 'Guarda el archivo como .xlsx (formato Excel)'],
+			['6', 'Sube el archivo en: POST /grades/upload'],
+			['7', 'Al subir, especifica el mismo id_carga y trimestre'],
+			['8', 'El sistema detectará automáticamente el archivo Excel'],
+		];
+		instrData.forEach((row, idx) => {
+			const cell = wsInstrucciones.addRow(row);
+			if (idx === 0) {
+				cell.eachCell((c) => {
+					c.fill = infoHeaderFill;
+					c.font = infoFont;
+					c.border = thinBorder;
+				});
+			} else {
+				cell.eachCell((c) => {
+					c.border = thinBorder;
+					c.font = { size: 10 };
+				});
+			}
+		});
+
+		const buffer = await workbook.xlsx.writeBuffer();
+
+		const nombreArchivo = `notas_${nombreMateria.replace(/\s+/g, '_')}_${nombreCurso.replace(/"/g, '')}_T${trimestre}_${gestion}.xlsx`;
+
+		return {
+			buffer,
+			filename: nombreArchivo,
+			info: {
+				materia: nombreMateria,
+				curso: nombreCurso,
+				gestion,
+				trimestre,
+			},
+		};
 	}
 }

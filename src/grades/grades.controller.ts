@@ -7,13 +7,15 @@ import {
   Post,
   Query,
   Req,
+  Res,
   UploadedFile,
   UseGuards,
   UseInterceptors,
   ParseIntPipe,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
-import type { Request as ExpressRequest } from 'express';
+import type { Request as ExpressRequest, Response as ExpressResponse } from 'express';
 import { GradesService } from './grades.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard, Roles } from '../auth/roles.guard';
@@ -123,5 +125,34 @@ export class GradesController {
     const trim = trimestre ? Number.parseInt(trimestre, 10) : undefined;
     const idProfesor = user?.rol === 'PROFESOR' ? user.id_persona : undefined;
     return await this.gradesService.getNotasPorCarga(idCarga, pagination, trim, idProfesor, user?.rol);
+  }
+
+  @Get('plantilla/:id_carga')
+  @Roles(RolUsuario.ADMIN, RolUsuario.PROFESOR)
+  async descargarPlantilla(
+    @Param('id_carga', ParseIntPipe) idCarga: number,
+    @Query('trimestre') trimestre: string,
+    @CurrentUser() user: CurrentUserPayload,
+    @Res() res: ExpressResponse,
+  ) {
+    if (!trimestre) {
+      throw new BadRequestException('Debes especificar el trimestre (1, 2 o 3)');
+    }
+
+    const trim = Number.parseInt(trimestre, 10);
+    if (Number.isNaN(trim) || ![1, 2, 3].includes(trim)) {
+      throw new BadRequestException('trimestre debe ser 1, 2 o 3');
+    }
+
+    const idProfesor = user.rol === 'PROFESOR' ? user.id_persona : undefined;
+
+    const resultado = await this.gradesService.generarPlantillaExcel(idCarga, trim, idProfesor, user.rol);
+
+    res.set({
+      'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'Content-Disposition': `attachment; filename="${resultado.filename}"`,
+    });
+
+    res.send(resultado.buffer);
   }
 }
