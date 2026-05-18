@@ -5,8 +5,11 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
-const jwtSecret =
-  process.env.JWT_SECRET || 'abraham_reyes_secreto_2026_super_seguro';
+const jwtSecret = process.env.JWT_SECRET;
+
+if (!jwtSecret) {
+  throw new Error('JWT_SECRET is not defined in environment variables');
+}
 
 @Module({
   imports: [

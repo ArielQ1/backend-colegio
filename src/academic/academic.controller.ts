@@ -108,7 +108,7 @@ export class AcademicController {
   @Roles(RolUsuario.ADMIN, RolUsuario.PROFESOR)
   async getCursoById(@Param('id', ParseIntPipe) id: number) {
     const curso = await this.academicService.getCursoById(id);
-    return { success: true, data: curso };
+    return curso;
   }
 
   @Get('materias')
@@ -138,11 +138,11 @@ export class AcademicController {
   @Roles(RolUsuario.ADMIN, RolUsuario.PROFESOR)
   async getMateriaById(@Param('id', ParseIntPipe) id: number) {
     const materia = await this.academicService.getMateriaById(id);
-    return { success: true, data: materia };
+    return materia;
   }
 
   @Get('carga-horaria/profesor/:idProfesor')
-  @Roles(RolUsuario.ADMIN, RolUsuario.PROFESOR)
+  @Roles(RolUsuario.ADMIN)
   async getCargasPorProfesor(
     @Param('idProfesor') idProfesor: string,
     @Query() pagination: PaginationDto,

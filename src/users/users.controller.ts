@@ -5,6 +5,7 @@ import {
   UseGuards,
   Get,
   Query,
+  Param,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -68,7 +69,7 @@ export class UsersController {
   @Get('estudiantes/:id')
   @Roles(RolUsuario.ADMIN, RolUsuario.PROFESOR, RolUsuario.PADRE)
   async getEstudianteById(
-    @Query('id') id: string,
+    @Param('id') id: string,
     @CurrentUser() user: CurrentUserPayload,
   ) {
     const idProfesor = user.rol === 'PROFESOR' ? user.id_persona : undefined;

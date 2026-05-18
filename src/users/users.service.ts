@@ -6,6 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { AccessService } from '../common/access.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { RolUsuario } from '../generated/prisma/enums';
@@ -18,7 +19,10 @@ type PrismaKnownError = { code?: string; meta?: { target?: string[] | string } }
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly accessService: AccessService,
+  ) {}
 
   async createEstudiante(data: CreateUserDto) {
     const nombres = data.nombres?.trim();
@@ -475,35 +479,9 @@ export class UsersService {
     return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
   }
 
-  private async tieneAccesoAEstudiante(idProfesor: string, idEstudiante: string): Promise<boolean> {
-    const gestionActual = new Date().getFullYear();
-
-    const cargasProfesor = await this.prisma.cargaHoraria.findMany({
-      where: {
-        id_profesor: idProfesor,
-        curso: { gestion: gestionActual },
-      },
-      select: { id_curso: true },
-    });
-
-    const idsCursos = cargasProfesor.map((c) => c.id_curso);
-
-    if (idsCursos.length === 0) return false;
-
-    const inscripcion = await this.prisma.inscripcion.findFirst({
-      where: {
-        id_estudiante: idEstudiante,
-        id_curso: { in: idsCursos },
-        estado: 'EFECTIVO',
-      },
-    });
-
-    return !!inscripcion;
-  }
-
   async getEstudianteById(id: string, idProfesor?: string, rol?: string) {
     if (rol === 'PROFESOR' && idProfesor) {
-      const tieneAcceso = await this.tieneAccesoAEstudiante(idProfesor, id);
+      const tieneAcceso = await this.accessService.tieneAccesoAEstudiante(idProfesor, id);
       if (!tieneAcceso) {
         throw new ForbiddenException('No tienes acceso a este estudiante');
       }
@@ -529,7 +507,7 @@ export class UsersService {
       throw new NotFoundException(`Estudiante con ID ${id} no encontrado`);
     }
 
-    return { success: true, data: estudiante };
+    return estudiante;
   }
 
   async getAllPadres(pagination: PaginationDto) {

@@ -1,6 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { RolUsuario } from '../generated/prisma/enums';
 import { PrismaService } from '../prisma/prisma.service';
+import { AccessService } from '../common/access.service';
 import csv from 'csv-parser';
 import { Readable } from 'stream';
 import { Express } from 'express';
@@ -20,36 +21,14 @@ type CsvGradeRow = {
 
 @Injectable()
 export class GradesService {
-	constructor(private readonly prisma: PrismaService) {}
-
-	private async tieneAccesoAEstudiante(idProfesor: string, idEstudiante: string): Promise<boolean> {
-		const gestionActual = new Date().getFullYear();
-
-		const cargasProfesor = await this.prisma.cargaHoraria.findMany({
-			where: {
-				id_profesor: idProfesor,
-				curso: { gestion: gestionActual },
-			},
-			select: { id_curso: true },
-		});
-
-		const idsCursos = cargasProfesor.map((c) => c.id_curso);
-		if (idsCursos.length === 0) return false;
-
-		const inscripcion = await this.prisma.inscripcion.findFirst({
-			where: {
-				id_estudiante: idEstudiante,
-				id_curso: { in: idsCursos },
-				estado: 'EFECTIVO',
-			},
-		});
-
-		return !!inscripcion;
-	}
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly accessService: AccessService,
+	) {}
 
 	async getNotasPorEstudiante(idEstudiante: string, pagination: PaginationDto, idProfesor?: string, rol?: string) {
 		if (rol === RolUsuario.PROFESOR && idProfesor) {
-			const tieneAcceso = await this.tieneAccesoAEstudiante(idProfesor, idEstudiante);
+			const tieneAcceso = await this.accessService.tieneAccesoAEstudiante(idProfesor, idEstudiante);
 			if (!tieneAcceso) {
 				throw new ForbiddenException('No tienes acceso a las notas de este estudiante');
 			}
@@ -92,20 +71,6 @@ export class GradesService {
 		return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
 	}
 
-	private async tieneAccesoACurso(idProfesor: string, idCurso: number): Promise<boolean> {
-		const gestionActual = new Date().getFullYear();
-
-		const carga = await this.prisma.cargaHoraria.findFirst({
-			where: {
-				id_profesor: idProfesor,
-				id_curso: idCurso,
-				curso: { gestion: gestionActual },
-			},
-		});
-
-		return !!carga;
-	}
-
 	async getNotasPorCurso(idCurso: number, pagination: PaginationDto, trimestre?: number, idProfesor?: string, rol?: string) {
 		const curso = await this.prisma.curso.findUnique({ where: { id_curso: idCurso } });
 		if (!curso) {
@@ -113,7 +78,7 @@ export class GradesService {
 		}
 
 		if (rol === RolUsuario.PROFESOR && idProfesor) {
-			const tieneAcceso = await this.tieneAccesoACurso(idProfesor, idCurso);
+			const tieneAcceso = await this.accessService.tieneAccesoACurso(idProfesor, idCurso);
 			if (!tieneAcceso) {
 				throw new ForbiddenException('No tienes acceso a las notas de este curso');
 			}
@@ -486,7 +451,13 @@ async uploadGradesCsv(
 		}
 
 		const parsed = Number.parseFloat(value);
-		return Number.isNaN(parsed) ? 0 : parsed;
+		if (Number.isNaN(parsed)) {
+			return 0;
+		}
+		if (parsed < 0 || parsed > 100) {
+			throw new BadRequestException(`Nota inválida: ${value}. Las notas deben estar entre 0 y 100`);
+		}
+		return parsed;
 	}
 
 	async generarPlantillaExcel(idCarga: number, trimestre: number, idProfesor?: string, rol?: string) {

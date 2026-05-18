@@ -30,9 +30,6 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('perfil')
   async getPerfil(@Req() req: AuthenticatedRequest) {
-    return {
-      mensaje: 'Entraste a la zona VIP del colegio',
-      datos_del_usuario: req.user,
-    };
+    return req.user;
   }
 }
