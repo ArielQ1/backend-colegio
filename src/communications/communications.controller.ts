@@ -17,6 +17,7 @@ import { RolesGuard, Roles } from '../auth/roles.guard';
 import { RolUsuario, TipoComunicado } from '../generated/prisma/enums';
 import { Request as ExpressRequest } from 'express';
 import { PaginationDto } from '../common/pagination.dto';
+import { EmitirComunicadoDto } from './dto';
 
 type AuthenticatedRequest = ExpressRequest & {
   user?: { sub: string; rol: string; id_persona: string };
@@ -31,8 +32,7 @@ export class CommunicationsController {
   @Roles(RolUsuario.PROFESOR)
   createComunicado(
     @Req() req: AuthenticatedRequest,
-    @Body()
-    body: { id_estudiante: string; tipo: TipoComunicado; descripcion: string },
+    @Body() body: EmitirComunicadoDto,
   ) {
     const idPersona = req.user?.id_persona;
     if (!idPersona) {
@@ -86,6 +86,34 @@ export class CommunicationsController {
     if (fechaHasta) filtros.fechaHasta = new Date(fechaHasta);
 
     return this.communicationsService.getComunicadosPorEstudiante(idEstudiante, pagination, filtros);
+  }
+
+  @Get('admin')
+  @Roles(RolUsuario.ADMIN)
+  getTodosLosComunicados(
+    @Query() pagination: PaginationDto,
+    @Query('tipo') tipo?: TipoComunicado,
+    @Query('leido') leido?: string,
+    @Query('fechaDesde') fechaDesde?: string,
+    @Query('fechaHasta') fechaHasta?: string,
+    @Query('id_profesor') idProfesor?: string,
+    @Query('id_estudiante') idEstudiante?: string,
+  ) {
+    const filtros: any = {};
+    if (tipo) filtros.tipo = tipo;
+    if (leido !== undefined) filtros.leido = leido === 'true';
+    if (fechaDesde) filtros.fechaDesde = new Date(fechaDesde);
+    if (fechaHasta) filtros.fechaHasta = new Date(fechaHasta);
+    if (idProfesor) filtros.id_profesor = idProfesor;
+    if (idEstudiante) filtros.id_estudiante = idEstudiante;
+
+    return this.communicationsService.getTodosLosComunicados(pagination, filtros);
+  }
+
+  @Get('resumen')
+  @Roles(RolUsuario.ADMIN)
+  getResumenComunicados(@Query() pagination: PaginationDto) {
+    return this.communicationsService.getResumenComunicados(pagination);
   }
 
   @Patch(':id/leido')

@@ -178,7 +178,7 @@ export type MateriaGroupByOutputType = {
   _max: MateriaMaxAggregateOutputType | null
 }
 
-type GetMateriaGroupByPayload<T extends MateriaGroupByArgs> = Prisma.PrismaPromise<
+export type GetMateriaGroupByPayload<T extends MateriaGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<MateriaGroupByOutputType, T['by']> &
       {
@@ -1063,6 +1063,11 @@ export type MateriaFindManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Skip the first `n` Materias.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of Materias.
+   */
   distinct?: Prisma.MateriaScalarFieldEnum | Prisma.MateriaScalarFieldEnum[]
 }
 

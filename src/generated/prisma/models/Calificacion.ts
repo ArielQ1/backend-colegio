@@ -263,7 +263,7 @@ export type CalificacionGroupByOutputType = {
   _max: CalificacionMaxAggregateOutputType | null
 }
 
-type GetCalificacionGroupByPayload<T extends CalificacionGroupByArgs> = Prisma.PrismaPromise<
+export type GetCalificacionGroupByPayload<T extends CalificacionGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<CalificacionGroupByOutputType, T['by']> &
       {
@@ -1553,6 +1553,11 @@ export type CalificacionFindManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * Skip the first `n` Calificacions.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of Calificacions.
+   */
   distinct?: Prisma.CalificacionScalarFieldEnum | Prisma.CalificacionScalarFieldEnum[]
 }
 

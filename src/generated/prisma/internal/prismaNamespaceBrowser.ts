@@ -203,7 +203,8 @@ export const ComunicadoScalarFieldEnum = {
   tipo: 'tipo',
   descripcion: 'descripcion',
   fecha: 'fecha',
-  leido_por_padre: 'leido_por_padre'
+  leido_por_padre: 'leido_por_padre',
+  es_grupo: 'es_grupo'
 } as const
 
 export type ComunicadoScalarFieldEnum = (typeof ComunicadoScalarFieldEnum)[keyof typeof ComunicadoScalarFieldEnum]

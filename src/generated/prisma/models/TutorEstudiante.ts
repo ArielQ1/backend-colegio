@@ -137,7 +137,7 @@ export type TutorEstudianteGroupByOutputType = {
   _max: TutorEstudianteMaxAggregateOutputType | null
 }
 
-type GetTutorEstudianteGroupByPayload<T extends TutorEstudianteGroupByArgs> = Prisma.PrismaPromise<
+export type GetTutorEstudianteGroupByPayload<T extends TutorEstudianteGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<TutorEstudianteGroupByOutputType, T['by']> &
       {
@@ -1126,6 +1126,11 @@ export type TutorEstudianteFindManyArgs<ExtArgs extends runtime.Types.Extensions
    * Skip the first `n` TutorEstudiantes.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of TutorEstudiantes.
+   */
   distinct?: Prisma.TutorEstudianteScalarFieldEnum | Prisma.TutorEstudianteScalarFieldEnum[]
 }
 

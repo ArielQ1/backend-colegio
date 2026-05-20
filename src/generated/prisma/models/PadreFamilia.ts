@@ -137,7 +137,7 @@ export type PadreFamiliaGroupByOutputType = {
   _max: PadreFamiliaMaxAggregateOutputType | null
 }
 
-type GetPadreFamiliaGroupByPayload<T extends PadreFamiliaGroupByArgs> = Prisma.PrismaPromise<
+export type GetPadreFamiliaGroupByPayload<T extends PadreFamiliaGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<PadreFamiliaGroupByOutputType, T['by']> &
       {
@@ -1077,6 +1077,11 @@ export type PadreFamiliaFindManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * Skip the first `n` PadreFamilias.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of PadreFamilias.
+   */
   distinct?: Prisma.PadreFamiliaScalarFieldEnum | Prisma.PadreFamiliaScalarFieldEnum[]
 }
 

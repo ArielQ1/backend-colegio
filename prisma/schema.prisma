@@ -33,6 +33,7 @@ enum TipoComunicado {
   INDISCIPLINA
   CITACION
   MATERIAL_FALTO
+  GENERAL
 }
 
 // ================= 1. IDENTIDAD Y ACCESOS =================
@@ -172,14 +173,15 @@ model Calificacion {
 }
 
 model Comunicado {
-  id_comunicado   Int            @id @default(autoincrement())
-  id_profesor     String
-  id_estudiante   String
-  tipo            TipoComunicado
-  descripcion     String         @db.Text
-  fecha           DateTime       @default(now())
-  leido_por_padre Boolean        @default(false)
+  id_comunicado Int      @id @default(autoincrement())
+  id_profesor   String
+  id_estudiante String?
+  tipo         TipoComunicado
+  descripcion  String   @db.Text
+  fecha        DateTime @default(now())
+  leido_por_padre Boolean @default(false)
+  es_grupo     Boolean  @default(false)
 
   profesor   Profesor   @relation(fields: [id_profesor], references: [id_persona], onDelete: Cascade)
-  estudiante Estudiante @relation(fields: [id_estudiante], references: [id_persona], onDelete: Cascade)
+  estudiante Estudiante? @relation(fields: [id_estudiante], references: [id_persona], onDelete: Cascade)
 }

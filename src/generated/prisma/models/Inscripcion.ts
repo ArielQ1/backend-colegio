@@ -196,7 +196,7 @@ export type InscripcionGroupByOutputType = {
   _max: InscripcionMaxAggregateOutputType | null
 }
 
-type GetInscripcionGroupByPayload<T extends InscripcionGroupByArgs> = Prisma.PrismaPromise<
+export type GetInscripcionGroupByPayload<T extends InscripcionGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<InscripcionGroupByOutputType, T['by']> &
       {
@@ -1408,6 +1408,11 @@ export type InscripcionFindManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Skip the first `n` Inscripcions.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of Inscripcions.
+   */
   distinct?: Prisma.InscripcionScalarFieldEnum | Prisma.InscripcionScalarFieldEnum[]
 }
 

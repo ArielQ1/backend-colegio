@@ -203,7 +203,7 @@ export type CursoGroupByOutputType = {
   _max: CursoMaxAggregateOutputType | null
 }
 
-type GetCursoGroupByPayload<T extends CursoGroupByArgs> = Prisma.PrismaPromise<
+export type GetCursoGroupByPayload<T extends CursoGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<CursoGroupByOutputType, T['by']> &
       {
@@ -1265,6 +1265,11 @@ export type CursoFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Skip the first `n` Cursos.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of Cursos.
+   */
   distinct?: Prisma.CursoScalarFieldEnum | Prisma.CursoScalarFieldEnum[]
 }
 

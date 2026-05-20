@@ -31,7 +31,8 @@ export const TipoComunicado = {
   FELICITACION: 'FELICITACION',
   INDISCIPLINA: 'INDISCIPLINA',
   CITACION: 'CITACION',
-  MATERIAL_FALTO: 'MATERIAL_FALTO'
+  MATERIAL_FALTO: 'MATERIAL_FALTO',
+  GENERAL: 'GENERAL'
 } as const
 
 export type TipoComunicado = (typeof TipoComunicado)[keyof typeof TipoComunicado]

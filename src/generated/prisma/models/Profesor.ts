@@ -137,7 +137,7 @@ export type ProfesorGroupByOutputType = {
   _max: ProfesorMaxAggregateOutputType | null
 }
 
-type GetProfesorGroupByPayload<T extends ProfesorGroupByArgs> = Prisma.PrismaPromise<
+export type GetProfesorGroupByPayload<T extends ProfesorGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ProfesorGroupByOutputType, T['by']> &
       {
@@ -1159,6 +1159,11 @@ export type ProfesorFindManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Skip the first `n` Profesors.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of Profesors.
+   */
   distinct?: Prisma.ProfesorScalarFieldEnum | Prisma.ProfesorScalarFieldEnum[]
 }
 

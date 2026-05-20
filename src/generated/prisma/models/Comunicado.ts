@@ -42,6 +42,7 @@ export type ComunicadoMinAggregateOutputType = {
   descripcion: string | null
   fecha: Date | null
   leido_por_padre: boolean | null
+  es_grupo: boolean | null
 }
 
 export type ComunicadoMaxAggregateOutputType = {
@@ -52,6 +53,7 @@ export type ComunicadoMaxAggregateOutputType = {
   descripcion: string | null
   fecha: Date | null
   leido_por_padre: boolean | null
+  es_grupo: boolean | null
 }
 
 export type ComunicadoCountAggregateOutputType = {
@@ -62,6 +64,7 @@ export type ComunicadoCountAggregateOutputType = {
   descripcion: number
   fecha: number
   leido_por_padre: number
+  es_grupo: number
   _all: number
 }
 
@@ -82,6 +85,7 @@ export type ComunicadoMinAggregateInputType = {
   descripcion?: true
   fecha?: true
   leido_por_padre?: true
+  es_grupo?: true
 }
 
 export type ComunicadoMaxAggregateInputType = {
@@ -92,6 +96,7 @@ export type ComunicadoMaxAggregateInputType = {
   descripcion?: true
   fecha?: true
   leido_por_padre?: true
+  es_grupo?: true
 }
 
 export type ComunicadoCountAggregateInputType = {
@@ -102,6 +107,7 @@ export type ComunicadoCountAggregateInputType = {
   descripcion?: true
   fecha?: true
   leido_por_padre?: true
+  es_grupo?: true
   _all?: true
 }
 
@@ -194,11 +200,12 @@ export type ComunicadoGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
 export type ComunicadoGroupByOutputType = {
   id_comunicado: number
   id_profesor: string
-  id_estudiante: string
+  id_estudiante: string | null
   tipo: $Enums.TipoComunicado
   descripcion: string
   fecha: Date
   leido_por_padre: boolean
+  es_grupo: boolean
   _count: ComunicadoCountAggregateOutputType | null
   _avg: ComunicadoAvgAggregateOutputType | null
   _sum: ComunicadoSumAggregateOutputType | null
@@ -206,7 +213,7 @@ export type ComunicadoGroupByOutputType = {
   _max: ComunicadoMaxAggregateOutputType | null
 }
 
-type GetComunicadoGroupByPayload<T extends ComunicadoGroupByArgs> = Prisma.PrismaPromise<
+export type GetComunicadoGroupByPayload<T extends ComunicadoGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ComunicadoGroupByOutputType, T['by']> &
       {
@@ -227,23 +234,25 @@ export type ComunicadoWhereInput = {
   NOT?: Prisma.ComunicadoWhereInput | Prisma.ComunicadoWhereInput[]
   id_comunicado?: Prisma.IntFilter<"Comunicado"> | number
   id_profesor?: Prisma.StringFilter<"Comunicado"> | string
-  id_estudiante?: Prisma.StringFilter<"Comunicado"> | string
+  id_estudiante?: Prisma.StringNullableFilter<"Comunicado"> | string | null
   tipo?: Prisma.EnumTipoComunicadoFilter<"Comunicado"> | $Enums.TipoComunicado
   descripcion?: Prisma.StringFilter<"Comunicado"> | string
   fecha?: Prisma.DateTimeFilter<"Comunicado"> | Date | string
   leido_por_padre?: Prisma.BoolFilter<"Comunicado"> | boolean
+  es_grupo?: Prisma.BoolFilter<"Comunicado"> | boolean
   profesor?: Prisma.XOR<Prisma.ProfesorScalarRelationFilter, Prisma.ProfesorWhereInput>
-  estudiante?: Prisma.XOR<Prisma.EstudianteScalarRelationFilter, Prisma.EstudianteWhereInput>
+  estudiante?: Prisma.XOR<Prisma.EstudianteNullableScalarRelationFilter, Prisma.EstudianteWhereInput> | null
 }
 
 export type ComunicadoOrderByWithRelationInput = {
   id_comunicado?: Prisma.SortOrder
   id_profesor?: Prisma.SortOrder
-  id_estudiante?: Prisma.SortOrder
+  id_estudiante?: Prisma.SortOrderInput | Prisma.SortOrder
   tipo?: Prisma.SortOrder
   descripcion?: Prisma.SortOrder
   fecha?: Prisma.SortOrder
   leido_por_padre?: Prisma.SortOrder
+  es_grupo?: Prisma.SortOrder
   profesor?: Prisma.ProfesorOrderByWithRelationInput
   estudiante?: Prisma.EstudianteOrderByWithRelationInput
 }
@@ -254,23 +263,25 @@ export type ComunicadoWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ComunicadoWhereInput[]
   NOT?: Prisma.ComunicadoWhereInput | Prisma.ComunicadoWhereInput[]
   id_profesor?: Prisma.StringFilter<"Comunicado"> | string
-  id_estudiante?: Prisma.StringFilter<"Comunicado"> | string
+  id_estudiante?: Prisma.StringNullableFilter<"Comunicado"> | string | null
   tipo?: Prisma.EnumTipoComunicadoFilter<"Comunicado"> | $Enums.TipoComunicado
   descripcion?: Prisma.StringFilter<"Comunicado"> | string
   fecha?: Prisma.DateTimeFilter<"Comunicado"> | Date | string
   leido_por_padre?: Prisma.BoolFilter<"Comunicado"> | boolean
+  es_grupo?: Prisma.BoolFilter<"Comunicado"> | boolean
   profesor?: Prisma.XOR<Prisma.ProfesorScalarRelationFilter, Prisma.ProfesorWhereInput>
-  estudiante?: Prisma.XOR<Prisma.EstudianteScalarRelationFilter, Prisma.EstudianteWhereInput>
+  estudiante?: Prisma.XOR<Prisma.EstudianteNullableScalarRelationFilter, Prisma.EstudianteWhereInput> | null
 }, "id_comunicado">
 
 export type ComunicadoOrderByWithAggregationInput = {
   id_comunicado?: Prisma.SortOrder
   id_profesor?: Prisma.SortOrder
-  id_estudiante?: Prisma.SortOrder
+  id_estudiante?: Prisma.SortOrderInput | Prisma.SortOrder
   tipo?: Prisma.SortOrder
   descripcion?: Prisma.SortOrder
   fecha?: Prisma.SortOrder
   leido_por_padre?: Prisma.SortOrder
+  es_grupo?: Prisma.SortOrder
   _count?: Prisma.ComunicadoCountOrderByAggregateInput
   _avg?: Prisma.ComunicadoAvgOrderByAggregateInput
   _max?: Prisma.ComunicadoMaxOrderByAggregateInput
@@ -284,11 +295,12 @@ export type ComunicadoScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ComunicadoScalarWhereWithAggregatesInput | Prisma.ComunicadoScalarWhereWithAggregatesInput[]
   id_comunicado?: Prisma.IntWithAggregatesFilter<"Comunicado"> | number
   id_profesor?: Prisma.StringWithAggregatesFilter<"Comunicado"> | string
-  id_estudiante?: Prisma.StringWithAggregatesFilter<"Comunicado"> | string
+  id_estudiante?: Prisma.StringNullableWithAggregatesFilter<"Comunicado"> | string | null
   tipo?: Prisma.EnumTipoComunicadoWithAggregatesFilter<"Comunicado"> | $Enums.TipoComunicado
   descripcion?: Prisma.StringWithAggregatesFilter<"Comunicado"> | string
   fecha?: Prisma.DateTimeWithAggregatesFilter<"Comunicado"> | Date | string
   leido_por_padre?: Prisma.BoolWithAggregatesFilter<"Comunicado"> | boolean
+  es_grupo?: Prisma.BoolWithAggregatesFilter<"Comunicado"> | boolean
 }
 
 export type ComunicadoCreateInput = {
@@ -296,18 +308,20 @@ export type ComunicadoCreateInput = {
   descripcion: string
   fecha?: Date | string
   leido_por_padre?: boolean
+  es_grupo?: boolean
   profesor: Prisma.ProfesorCreateNestedOneWithoutComunicadosInput
-  estudiante: Prisma.EstudianteCreateNestedOneWithoutComunicadosInput
+  estudiante?: Prisma.EstudianteCreateNestedOneWithoutComunicadosInput
 }
 
 export type ComunicadoUncheckedCreateInput = {
   id_comunicado?: number
   id_profesor: string
-  id_estudiante: string
+  id_estudiante?: string | null
   tipo: $Enums.TipoComunicado
   descripcion: string
   fecha?: Date | string
   leido_por_padre?: boolean
+  es_grupo?: boolean
 }
 
 export type ComunicadoUpdateInput = {
@@ -315,28 +329,31 @@ export type ComunicadoUpdateInput = {
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   leido_por_padre?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  es_grupo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profesor?: Prisma.ProfesorUpdateOneRequiredWithoutComunicadosNestedInput
-  estudiante?: Prisma.EstudianteUpdateOneRequiredWithoutComunicadosNestedInput
+  estudiante?: Prisma.EstudianteUpdateOneWithoutComunicadosNestedInput
 }
 
 export type ComunicadoUncheckedUpdateInput = {
   id_comunicado?: Prisma.IntFieldUpdateOperationsInput | number
   id_profesor?: Prisma.StringFieldUpdateOperationsInput | string
-  id_estudiante?: Prisma.StringFieldUpdateOperationsInput | string
+  id_estudiante?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tipo?: Prisma.EnumTipoComunicadoFieldUpdateOperationsInput | $Enums.TipoComunicado
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   leido_por_padre?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  es_grupo?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ComunicadoCreateManyInput = {
   id_comunicado?: number
   id_profesor: string
-  id_estudiante: string
+  id_estudiante?: string | null
   tipo: $Enums.TipoComunicado
   descripcion: string
   fecha?: Date | string
   leido_por_padre?: boolean
+  es_grupo?: boolean
 }
 
 export type ComunicadoUpdateManyMutationInput = {
@@ -344,16 +361,18 @@ export type ComunicadoUpdateManyMutationInput = {
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   leido_por_padre?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  es_grupo?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ComunicadoUncheckedUpdateManyInput = {
   id_comunicado?: Prisma.IntFieldUpdateOperationsInput | number
   id_profesor?: Prisma.StringFieldUpdateOperationsInput | string
-  id_estudiante?: Prisma.StringFieldUpdateOperationsInput | string
+  id_estudiante?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tipo?: Prisma.EnumTipoComunicadoFieldUpdateOperationsInput | $Enums.TipoComunicado
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   leido_por_padre?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  es_grupo?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ComunicadoListRelationFilter = {
@@ -374,6 +393,7 @@ export type ComunicadoCountOrderByAggregateInput = {
   descripcion?: Prisma.SortOrder
   fecha?: Prisma.SortOrder
   leido_por_padre?: Prisma.SortOrder
+  es_grupo?: Prisma.SortOrder
 }
 
 export type ComunicadoAvgOrderByAggregateInput = {
@@ -388,6 +408,7 @@ export type ComunicadoMaxOrderByAggregateInput = {
   descripcion?: Prisma.SortOrder
   fecha?: Prisma.SortOrder
   leido_por_padre?: Prisma.SortOrder
+  es_grupo?: Prisma.SortOrder
 }
 
 export type ComunicadoMinOrderByAggregateInput = {
@@ -398,6 +419,7 @@ export type ComunicadoMinOrderByAggregateInput = {
   descripcion?: Prisma.SortOrder
   fecha?: Prisma.SortOrder
   leido_por_padre?: Prisma.SortOrder
+  es_grupo?: Prisma.SortOrder
 }
 
 export type ComunicadoSumOrderByAggregateInput = {
@@ -497,6 +519,7 @@ export type ComunicadoCreateWithoutEstudianteInput = {
   descripcion: string
   fecha?: Date | string
   leido_por_padre?: boolean
+  es_grupo?: boolean
   profesor: Prisma.ProfesorCreateNestedOneWithoutComunicadosInput
 }
 
@@ -507,6 +530,7 @@ export type ComunicadoUncheckedCreateWithoutEstudianteInput = {
   descripcion: string
   fecha?: Date | string
   leido_por_padre?: boolean
+  es_grupo?: boolean
 }
 
 export type ComunicadoCreateOrConnectWithoutEstudianteInput = {
@@ -541,11 +565,12 @@ export type ComunicadoScalarWhereInput = {
   NOT?: Prisma.ComunicadoScalarWhereInput | Prisma.ComunicadoScalarWhereInput[]
   id_comunicado?: Prisma.IntFilter<"Comunicado"> | number
   id_profesor?: Prisma.StringFilter<"Comunicado"> | string
-  id_estudiante?: Prisma.StringFilter<"Comunicado"> | string
+  id_estudiante?: Prisma.StringNullableFilter<"Comunicado"> | string | null
   tipo?: Prisma.EnumTipoComunicadoFilter<"Comunicado"> | $Enums.TipoComunicado
   descripcion?: Prisma.StringFilter<"Comunicado"> | string
   fecha?: Prisma.DateTimeFilter<"Comunicado"> | Date | string
   leido_por_padre?: Prisma.BoolFilter<"Comunicado"> | boolean
+  es_grupo?: Prisma.BoolFilter<"Comunicado"> | boolean
 }
 
 export type ComunicadoCreateWithoutProfesorInput = {
@@ -553,16 +578,18 @@ export type ComunicadoCreateWithoutProfesorInput = {
   descripcion: string
   fecha?: Date | string
   leido_por_padre?: boolean
-  estudiante: Prisma.EstudianteCreateNestedOneWithoutComunicadosInput
+  es_grupo?: boolean
+  estudiante?: Prisma.EstudianteCreateNestedOneWithoutComunicadosInput
 }
 
 export type ComunicadoUncheckedCreateWithoutProfesorInput = {
   id_comunicado?: number
-  id_estudiante: string
+  id_estudiante?: string | null
   tipo: $Enums.TipoComunicado
   descripcion: string
   fecha?: Date | string
   leido_por_padre?: boolean
+  es_grupo?: boolean
 }
 
 export type ComunicadoCreateOrConnectWithoutProfesorInput = {
@@ -598,6 +625,7 @@ export type ComunicadoCreateManyEstudianteInput = {
   descripcion: string
   fecha?: Date | string
   leido_por_padre?: boolean
+  es_grupo?: boolean
 }
 
 export type ComunicadoUpdateWithoutEstudianteInput = {
@@ -605,6 +633,7 @@ export type ComunicadoUpdateWithoutEstudianteInput = {
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   leido_por_padre?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  es_grupo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profesor?: Prisma.ProfesorUpdateOneRequiredWithoutComunicadosNestedInput
 }
 
@@ -615,6 +644,7 @@ export type ComunicadoUncheckedUpdateWithoutEstudianteInput = {
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   leido_por_padre?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  es_grupo?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ComunicadoUncheckedUpdateManyWithoutEstudianteInput = {
@@ -624,15 +654,17 @@ export type ComunicadoUncheckedUpdateManyWithoutEstudianteInput = {
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   leido_por_padre?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  es_grupo?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ComunicadoCreateManyProfesorInput = {
   id_comunicado?: number
-  id_estudiante: string
+  id_estudiante?: string | null
   tipo: $Enums.TipoComunicado
   descripcion: string
   fecha?: Date | string
   leido_por_padre?: boolean
+  es_grupo?: boolean
 }
 
 export type ComunicadoUpdateWithoutProfesorInput = {
@@ -640,25 +672,28 @@ export type ComunicadoUpdateWithoutProfesorInput = {
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   leido_por_padre?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  estudiante?: Prisma.EstudianteUpdateOneRequiredWithoutComunicadosNestedInput
+  es_grupo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  estudiante?: Prisma.EstudianteUpdateOneWithoutComunicadosNestedInput
 }
 
 export type ComunicadoUncheckedUpdateWithoutProfesorInput = {
   id_comunicado?: Prisma.IntFieldUpdateOperationsInput | number
-  id_estudiante?: Prisma.StringFieldUpdateOperationsInput | string
+  id_estudiante?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tipo?: Prisma.EnumTipoComunicadoFieldUpdateOperationsInput | $Enums.TipoComunicado
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   leido_por_padre?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  es_grupo?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ComunicadoUncheckedUpdateManyWithoutProfesorInput = {
   id_comunicado?: Prisma.IntFieldUpdateOperationsInput | number
-  id_estudiante?: Prisma.StringFieldUpdateOperationsInput | string
+  id_estudiante?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tipo?: Prisma.EnumTipoComunicadoFieldUpdateOperationsInput | $Enums.TipoComunicado
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   leido_por_padre?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  es_grupo?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 
@@ -671,8 +706,9 @@ export type ComunicadoSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   descripcion?: boolean
   fecha?: boolean
   leido_por_padre?: boolean
+  es_grupo?: boolean
   profesor?: boolean | Prisma.ProfesorDefaultArgs<ExtArgs>
-  estudiante?: boolean | Prisma.EstudianteDefaultArgs<ExtArgs>
+  estudiante?: boolean | Prisma.Comunicado$estudianteArgs<ExtArgs>
 }, ExtArgs["result"]["comunicado"]>
 
 export type ComunicadoSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -683,8 +719,9 @@ export type ComunicadoSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   descripcion?: boolean
   fecha?: boolean
   leido_por_padre?: boolean
+  es_grupo?: boolean
   profesor?: boolean | Prisma.ProfesorDefaultArgs<ExtArgs>
-  estudiante?: boolean | Prisma.EstudianteDefaultArgs<ExtArgs>
+  estudiante?: boolean | Prisma.Comunicado$estudianteArgs<ExtArgs>
 }, ExtArgs["result"]["comunicado"]>
 
 export type ComunicadoSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -695,8 +732,9 @@ export type ComunicadoSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   descripcion?: boolean
   fecha?: boolean
   leido_por_padre?: boolean
+  es_grupo?: boolean
   profesor?: boolean | Prisma.ProfesorDefaultArgs<ExtArgs>
-  estudiante?: boolean | Prisma.EstudianteDefaultArgs<ExtArgs>
+  estudiante?: boolean | Prisma.Comunicado$estudianteArgs<ExtArgs>
 }, ExtArgs["result"]["comunicado"]>
 
 export type ComunicadoSelectScalar = {
@@ -707,36 +745,38 @@ export type ComunicadoSelectScalar = {
   descripcion?: boolean
   fecha?: boolean
   leido_por_padre?: boolean
+  es_grupo?: boolean
 }
 
-export type ComunicadoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id_comunicado" | "id_profesor" | "id_estudiante" | "tipo" | "descripcion" | "fecha" | "leido_por_padre", ExtArgs["result"]["comunicado"]>
+export type ComunicadoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id_comunicado" | "id_profesor" | "id_estudiante" | "tipo" | "descripcion" | "fecha" | "leido_por_padre" | "es_grupo", ExtArgs["result"]["comunicado"]>
 export type ComunicadoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   profesor?: boolean | Prisma.ProfesorDefaultArgs<ExtArgs>
-  estudiante?: boolean | Prisma.EstudianteDefaultArgs<ExtArgs>
+  estudiante?: boolean | Prisma.Comunicado$estudianteArgs<ExtArgs>
 }
 export type ComunicadoIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   profesor?: boolean | Prisma.ProfesorDefaultArgs<ExtArgs>
-  estudiante?: boolean | Prisma.EstudianteDefaultArgs<ExtArgs>
+  estudiante?: boolean | Prisma.Comunicado$estudianteArgs<ExtArgs>
 }
 export type ComunicadoIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   profesor?: boolean | Prisma.ProfesorDefaultArgs<ExtArgs>
-  estudiante?: boolean | Prisma.EstudianteDefaultArgs<ExtArgs>
+  estudiante?: boolean | Prisma.Comunicado$estudianteArgs<ExtArgs>
 }
 
 export type $ComunicadoPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Comunicado"
   objects: {
     profesor: Prisma.$ProfesorPayload<ExtArgs>
-    estudiante: Prisma.$EstudiantePayload<ExtArgs>
+    estudiante: Prisma.$EstudiantePayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id_comunicado: number
     id_profesor: string
-    id_estudiante: string
+    id_estudiante: string | null
     tipo: $Enums.TipoComunicado
     descripcion: string
     fecha: Date
     leido_por_padre: boolean
+    es_grupo: boolean
   }, ExtArgs["result"]["comunicado"]>
   composites: {}
 }
@@ -1132,7 +1172,7 @@ readonly fields: ComunicadoFieldRefs;
 export interface Prisma__ComunicadoClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   profesor<T extends Prisma.ProfesorDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProfesorDefaultArgs<ExtArgs>>): Prisma.Prisma__ProfesorClient<runtime.Types.Result.GetResult<Prisma.$ProfesorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  estudiante<T extends Prisma.EstudianteDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EstudianteDefaultArgs<ExtArgs>>): Prisma.Prisma__EstudianteClient<runtime.Types.Result.GetResult<Prisma.$EstudiantePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  estudiante<T extends Prisma.Comunicado$estudianteArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Comunicado$estudianteArgs<ExtArgs>>): Prisma.Prisma__EstudianteClient<runtime.Types.Result.GetResult<Prisma.$EstudiantePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1169,6 +1209,7 @@ export interface ComunicadoFieldRefs {
   readonly descripcion: Prisma.FieldRef<"Comunicado", 'String'>
   readonly fecha: Prisma.FieldRef<"Comunicado", 'DateTime'>
   readonly leido_por_padre: Prisma.FieldRef<"Comunicado", 'Boolean'>
+  readonly es_grupo: Prisma.FieldRef<"Comunicado", 'Boolean'>
 }
     
 
@@ -1365,6 +1406,11 @@ export type ComunicadoFindManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Skip the first `n` Comunicados.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of Comunicados.
+   */
   distinct?: Prisma.ComunicadoScalarFieldEnum | Prisma.ComunicadoScalarFieldEnum[]
 }
 
@@ -1562,6 +1608,25 @@ export type ComunicadoDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * Limit how many Comunicados to delete.
    */
   limit?: number
+}
+
+/**
+ * Comunicado.estudiante
+ */
+export type Comunicado$estudianteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Estudiante
+   */
+  select?: Prisma.EstudianteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Estudiante
+   */
+  omit?: Prisma.EstudianteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EstudianteInclude<ExtArgs> | null
+  where?: Prisma.EstudianteWhereInput
 }
 
 /**

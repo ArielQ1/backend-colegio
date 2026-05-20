@@ -144,7 +144,7 @@ export type EstudianteGroupByOutputType = {
   _max: EstudianteMaxAggregateOutputType | null
 }
 
-type GetEstudianteGroupByPayload<T extends EstudianteGroupByArgs> = Prisma.PrismaPromise<
+export type GetEstudianteGroupByPayload<T extends EstudianteGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<EstudianteGroupByOutputType, T['by']> &
       {
@@ -364,10 +364,12 @@ export type EstudianteCreateNestedOneWithoutComunicadosInput = {
   connect?: Prisma.EstudianteWhereUniqueInput
 }
 
-export type EstudianteUpdateOneRequiredWithoutComunicadosNestedInput = {
+export type EstudianteUpdateOneWithoutComunicadosNestedInput = {
   create?: Prisma.XOR<Prisma.EstudianteCreateWithoutComunicadosInput, Prisma.EstudianteUncheckedCreateWithoutComunicadosInput>
   connectOrCreate?: Prisma.EstudianteCreateOrConnectWithoutComunicadosInput
   upsert?: Prisma.EstudianteUpsertWithoutComunicadosInput
+  disconnect?: Prisma.EstudianteWhereInput | boolean
+  delete?: Prisma.EstudianteWhereInput | boolean
   connect?: Prisma.EstudianteWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.EstudianteUpdateToOneWithWhereWithoutComunicadosInput, Prisma.EstudianteUpdateWithoutComunicadosInput>, Prisma.EstudianteUncheckedUpdateWithoutComunicadosInput>
 }
@@ -1297,6 +1299,11 @@ export type EstudianteFindManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Skip the first `n` Estudiantes.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of Estudiantes.
+   */
   distinct?: Prisma.EstudianteScalarFieldEnum | Prisma.EstudianteScalarFieldEnum[]
 }
 

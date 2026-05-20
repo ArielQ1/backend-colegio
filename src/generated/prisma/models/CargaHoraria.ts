@@ -193,7 +193,7 @@ export type CargaHorariaGroupByOutputType = {
   _max: CargaHorariaMaxAggregateOutputType | null
 }
 
-type GetCargaHorariaGroupByPayload<T extends CargaHorariaGroupByArgs> = Prisma.PrismaPromise<
+export type GetCargaHorariaGroupByPayload<T extends CargaHorariaGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<CargaHorariaGroupByOutputType, T['by']> &
       {
@@ -1478,6 +1478,11 @@ export type CargaHorariaFindManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * Skip the first `n` CargaHorarias.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of CargaHorarias.
+   */
   distinct?: Prisma.CargaHorariaScalarFieldEnum | Prisma.CargaHorariaScalarFieldEnum[]
 }
 
