@@ -141,6 +141,12 @@ export class AcademicController {
     return materia;
   }
 
+  @Get('carga-horaria')
+  @Roles(RolUsuario.ADMIN)
+  async getAllCargas(@Query() pagination: PaginationDto) {
+    return await this.academicService.getAllCargas(pagination);
+  }
+
   @Get('carga-horaria/profesor/:idProfesor')
   @Roles(RolUsuario.ADMIN)
   async getCargasPorProfesor(

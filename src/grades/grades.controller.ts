@@ -21,6 +21,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard, Roles } from '../auth/roles.guard';
 import { RolUsuario } from '../generated/prisma/enums';
 import { PaginationDto } from '../common/pagination.dto';
+import { NotasQueryDto } from './dto/notas-query.dto';
 import { CurrentUser, type CurrentUserPayload } from '../auth/current-user.decorator';
 
 type AuthenticatedRequest = ExpressRequest & {
@@ -87,13 +88,12 @@ export class GradesController {
   @Roles(RolUsuario.ADMIN, RolUsuario.PROFESOR)
   async getNotasPorCurso(
     @Param('id_curso', ParseIntPipe) idCurso: number,
-    @Query() pagination: PaginationDto,
-    @Query('trimestre') trimestre?: string,
+    @Query() query: NotasQueryDto,
     @CurrentUser() user?: CurrentUserPayload,
   ) {
-    const trim = trimestre ? Number.parseInt(trimestre, 10) : undefined;
+    const { trimestre, ...pagination } = query;
     const idProfesor = user?.rol === 'PROFESOR' ? user.id_persona : undefined;
-    return await this.gradesService.getNotasPorCurso(idCurso, pagination, trim, idProfesor, user?.rol);
+    return await this.gradesService.getNotasPorCurso(idCurso, pagination, trimestre, idProfesor, user?.rol);
   }
 
   @Get('curso/:id_curso/gestion/:anio')
@@ -101,30 +101,26 @@ export class GradesController {
   async getNotasPorCursoGestion(
     @Param('id_curso', ParseIntPipe) idCurso: number,
     @Param('anio', ParseIntPipe) anio: number,
-    @Query() pagination: PaginationDto,
-    @Query('trimestre') trimestre?: string,
+    @Query() query: NotasQueryDto,
     @CurrentUser() user?: CurrentUserPayload,
   ) {
+    const { trimestre, ...pagination } = query;
     if (user?.rol === 'PROFESOR') {
-      const trim = trimestre ? Number.parseInt(trimestre, 10) : undefined;
-      return await this.gradesService.getNotasPorCursoGestion(user.id_persona, anio, pagination, trim);
+      return await this.gradesService.getNotasPorCursoGestion(user.id_persona, anio, pagination, trimestre);
     }
-    const cursoId = Number.parseInt(String(idCurso), 10);
-    const trim = trimestre ? Number.parseInt(trimestre, 10) : undefined;
-    return await this.gradesService.getNotasPorCurso(cursoId, pagination, trim);
+    return await this.gradesService.getNotasPorCurso(idCurso, pagination, trimestre);
   }
 
   @Get('carga/:id_carga')
   @Roles(RolUsuario.ADMIN, RolUsuario.PROFESOR)
   async getNotasPorCarga(
     @Param('id_carga', ParseIntPipe) idCarga: number,
-    @Query() pagination: PaginationDto,
-    @Query('trimestre') trimestre?: string,
+    @Query() query: NotasQueryDto,
     @CurrentUser() user?: CurrentUserPayload,
   ) {
-    const trim = trimestre ? Number.parseInt(trimestre, 10) : undefined;
+    const { trimestre, ...pagination } = query;
     const idProfesor = user?.rol === 'PROFESOR' ? user.id_persona : undefined;
-    return await this.gradesService.getNotasPorCarga(idCarga, pagination, trim, idProfesor, user?.rol);
+    return await this.gradesService.getNotasPorCarga(idCarga, pagination, trimestre, idProfesor, user?.rol);
   }
 
   @Get('plantilla/:id_carga')

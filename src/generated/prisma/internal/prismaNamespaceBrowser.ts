@@ -62,7 +62,8 @@ export const ModelName = {
   CargaHoraria: 'CargaHoraria',
   Inscripcion: 'Inscripcion',
   Calificacion: 'Calificacion',
-  Comunicado: 'Comunicado'
+  Comunicado: 'Comunicado',
+  ComunicadoLectura: 'ComunicadoLectura'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -199,15 +200,26 @@ export type CalificacionScalarFieldEnum = (typeof CalificacionScalarFieldEnum)[k
 export const ComunicadoScalarFieldEnum = {
   id_comunicado: 'id_comunicado',
   id_profesor: 'id_profesor',
+  id_autor_admin: 'id_autor_admin',
   id_estudiante: 'id_estudiante',
+  id_curso: 'id_curso',
+  alcance: 'alcance',
   tipo: 'tipo',
   descripcion: 'descripcion',
-  fecha: 'fecha',
-  leido_por_padre: 'leido_por_padre',
-  es_grupo: 'es_grupo'
+  fecha: 'fecha'
 } as const
 
 export type ComunicadoScalarFieldEnum = (typeof ComunicadoScalarFieldEnum)[keyof typeof ComunicadoScalarFieldEnum]
+
+
+export const ComunicadoLecturaScalarFieldEnum = {
+  id_comunicado: 'id_comunicado',
+  id_estudiante: 'id_estudiante',
+  leido_por_padre: 'leido_por_padre',
+  fecha_lectura: 'fecha_lectura'
+} as const
+
+export type ComunicadoLecturaScalarFieldEnum = (typeof ComunicadoLecturaScalarFieldEnum)[keyof typeof ComunicadoLecturaScalarFieldEnum]
 
 
 export const SortOrder = {

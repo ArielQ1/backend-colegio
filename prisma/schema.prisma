@@ -36,6 +36,12 @@ enum TipoComunicado {
   GENERAL
 }
 
+enum AlcanceComunicado {
+  TODOS
+  CURSO
+  INDIVIDUAL
+}
+
 // ================= 1. IDENTIDAD Y ACCESOS =================
 
 model Persona {
@@ -51,6 +57,7 @@ model Persona {
   estudiante    Estudiante?
   padre_familia PadreFamilia?
   profesor      Profesor?
+  comunicados_admin Comunicado[] @relation("AdminAutor")
 }
 
 model Usuario {
@@ -75,6 +82,7 @@ model Estudiante {
   inscripciones Inscripcion[]
   comunicados   Comunicado[]
   tutores       TutorEstudiante[] // Relación con sus padres
+  lecturas      ComunicadoLectura[]
 }
 
 model PadreFamilia {
@@ -117,6 +125,7 @@ model Curso {
 
   inscripciones Inscripcion[]
   cargas        CargaHoraria[]
+  comunicados   Comunicado[]
 }
 
 model Materia {
@@ -173,15 +182,31 @@ model Calificacion {
 }
 
 model Comunicado {
-  id_comunicado Int      @id @default(autoincrement())
-  id_profesor   String
-  id_estudiante String?
-  tipo         TipoComunicado
-  descripcion  String   @db.Text
-  fecha        DateTime @default(now())
-  leido_por_padre Boolean @default(false)
-  es_grupo     Boolean  @default(false)
+  id_comunicado   Int      @id @default(autoincrement())
+  id_profesor     String?
+  id_autor_admin  String?
+  id_estudiante   String?
+  id_curso        Int?
+  alcance         AlcanceComunicado
+  tipo            TipoComunicado
+  descripcion     String   @db.Text
+  fecha           DateTime @default(now())
 
-  profesor   Profesor   @relation(fields: [id_profesor], references: [id_persona], onDelete: Cascade)
-  estudiante Estudiante? @relation(fields: [id_estudiante], references: [id_persona], onDelete: Cascade)
+  profesor     Profesor?    @relation(fields: [id_profesor], references: [id_persona], onDelete: Cascade)
+  autor_admin  Persona?     @relation("AdminAutor", fields: [id_autor_admin], references: [id_persona], onDelete: SetNull)
+  estudiante   Estudiante?  @relation(fields: [id_estudiante], references: [id_persona], onDelete: Cascade)
+  curso        Curso?       @relation(fields: [id_curso], references: [id_curso], onDelete: SetNull)
+  lecturas     ComunicadoLectura[]
+}
+
+model ComunicadoLectura {
+  id_comunicado   Int
+  id_estudiante   String
+  leido_por_padre Boolean  @default(false)
+  fecha_lectura   DateTime?
+
+  comunicado Comunicado @relation(fields: [id_comunicado], references: [id_comunicado], onDelete: Cascade)
+  estudiante Estudiante @relation(fields: [id_estudiante], references: [id_persona], onDelete: Cascade)
+
+  @@id([id_comunicado, id_estudiante])
 }

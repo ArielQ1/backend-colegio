@@ -77,3 +77,8 @@ export type Calificacion = Prisma.CalificacionModel
  * 
  */
 export type Comunicado = Prisma.ComunicadoModel
+/**
+ * Model ComunicadoLectura
+ * 
+ */
+export type ComunicadoLectura = Prisma.ComunicadoLecturaModel

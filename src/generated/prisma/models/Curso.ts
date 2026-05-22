@@ -230,6 +230,7 @@ export type CursoWhereInput = {
   nivel?: Prisma.StringFilter<"Curso"> | string
   inscripciones?: Prisma.InscripcionListRelationFilter
   cargas?: Prisma.CargaHorariaListRelationFilter
+  comunicados?: Prisma.ComunicadoListRelationFilter
 }
 
 export type CursoOrderByWithRelationInput = {
@@ -241,6 +242,7 @@ export type CursoOrderByWithRelationInput = {
   nivel?: Prisma.SortOrder
   inscripciones?: Prisma.InscripcionOrderByRelationAggregateInput
   cargas?: Prisma.CargaHorariaOrderByRelationAggregateInput
+  comunicados?: Prisma.ComunicadoOrderByRelationAggregateInput
 }
 
 export type CursoWhereUniqueInput = Prisma.AtLeast<{
@@ -255,6 +257,7 @@ export type CursoWhereUniqueInput = Prisma.AtLeast<{
   nivel?: Prisma.StringFilter<"Curso"> | string
   inscripciones?: Prisma.InscripcionListRelationFilter
   cargas?: Prisma.CargaHorariaListRelationFilter
+  comunicados?: Prisma.ComunicadoListRelationFilter
 }, "id_curso">
 
 export type CursoOrderByWithAggregationInput = {
@@ -291,6 +294,7 @@ export type CursoCreateInput = {
   nivel: string
   inscripciones?: Prisma.InscripcionCreateNestedManyWithoutCursoInput
   cargas?: Prisma.CargaHorariaCreateNestedManyWithoutCursoInput
+  comunicados?: Prisma.ComunicadoCreateNestedManyWithoutCursoInput
 }
 
 export type CursoUncheckedCreateInput = {
@@ -302,6 +306,7 @@ export type CursoUncheckedCreateInput = {
   nivel: string
   inscripciones?: Prisma.InscripcionUncheckedCreateNestedManyWithoutCursoInput
   cargas?: Prisma.CargaHorariaUncheckedCreateNestedManyWithoutCursoInput
+  comunicados?: Prisma.ComunicadoUncheckedCreateNestedManyWithoutCursoInput
 }
 
 export type CursoUpdateInput = {
@@ -312,6 +317,7 @@ export type CursoUpdateInput = {
   nivel?: Prisma.StringFieldUpdateOperationsInput | string
   inscripciones?: Prisma.InscripcionUpdateManyWithoutCursoNestedInput
   cargas?: Prisma.CargaHorariaUpdateManyWithoutCursoNestedInput
+  comunicados?: Prisma.ComunicadoUpdateManyWithoutCursoNestedInput
 }
 
 export type CursoUncheckedUpdateInput = {
@@ -323,6 +329,7 @@ export type CursoUncheckedUpdateInput = {
   nivel?: Prisma.StringFieldUpdateOperationsInput | string
   inscripciones?: Prisma.InscripcionUncheckedUpdateManyWithoutCursoNestedInput
   cargas?: Prisma.CargaHorariaUncheckedUpdateManyWithoutCursoNestedInput
+  comunicados?: Prisma.ComunicadoUncheckedUpdateManyWithoutCursoNestedInput
 }
 
 export type CursoCreateManyInput = {
@@ -393,6 +400,11 @@ export type CursoScalarRelationFilter = {
   isNot?: Prisma.CursoWhereInput
 }
 
+export type CursoNullableScalarRelationFilter = {
+  is?: Prisma.CursoWhereInput | null
+  isNot?: Prisma.CursoWhereInput | null
+}
+
 export type IntFieldUpdateOperationsInput = {
   set?: number
   increment?: number
@@ -429,6 +441,22 @@ export type CursoUpdateOneRequiredWithoutInscripcionesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CursoUpdateToOneWithWhereWithoutInscripcionesInput, Prisma.CursoUpdateWithoutInscripcionesInput>, Prisma.CursoUncheckedUpdateWithoutInscripcionesInput>
 }
 
+export type CursoCreateNestedOneWithoutComunicadosInput = {
+  create?: Prisma.XOR<Prisma.CursoCreateWithoutComunicadosInput, Prisma.CursoUncheckedCreateWithoutComunicadosInput>
+  connectOrCreate?: Prisma.CursoCreateOrConnectWithoutComunicadosInput
+  connect?: Prisma.CursoWhereUniqueInput
+}
+
+export type CursoUpdateOneWithoutComunicadosNestedInput = {
+  create?: Prisma.XOR<Prisma.CursoCreateWithoutComunicadosInput, Prisma.CursoUncheckedCreateWithoutComunicadosInput>
+  connectOrCreate?: Prisma.CursoCreateOrConnectWithoutComunicadosInput
+  upsert?: Prisma.CursoUpsertWithoutComunicadosInput
+  disconnect?: Prisma.CursoWhereInput | boolean
+  delete?: Prisma.CursoWhereInput | boolean
+  connect?: Prisma.CursoWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CursoUpdateToOneWithWhereWithoutComunicadosInput, Prisma.CursoUpdateWithoutComunicadosInput>, Prisma.CursoUncheckedUpdateWithoutComunicadosInput>
+}
+
 export type CursoCreateWithoutCargasInput = {
   gestion: number
   turno: string
@@ -436,6 +464,7 @@ export type CursoCreateWithoutCargasInput = {
   paralelo: string
   nivel: string
   inscripciones?: Prisma.InscripcionCreateNestedManyWithoutCursoInput
+  comunicados?: Prisma.ComunicadoCreateNestedManyWithoutCursoInput
 }
 
 export type CursoUncheckedCreateWithoutCargasInput = {
@@ -446,6 +475,7 @@ export type CursoUncheckedCreateWithoutCargasInput = {
   paralelo: string
   nivel: string
   inscripciones?: Prisma.InscripcionUncheckedCreateNestedManyWithoutCursoInput
+  comunicados?: Prisma.ComunicadoUncheckedCreateNestedManyWithoutCursoInput
 }
 
 export type CursoCreateOrConnectWithoutCargasInput = {
@@ -471,6 +501,7 @@ export type CursoUpdateWithoutCargasInput = {
   paralelo?: Prisma.StringFieldUpdateOperationsInput | string
   nivel?: Prisma.StringFieldUpdateOperationsInput | string
   inscripciones?: Prisma.InscripcionUpdateManyWithoutCursoNestedInput
+  comunicados?: Prisma.ComunicadoUpdateManyWithoutCursoNestedInput
 }
 
 export type CursoUncheckedUpdateWithoutCargasInput = {
@@ -481,6 +512,7 @@ export type CursoUncheckedUpdateWithoutCargasInput = {
   paralelo?: Prisma.StringFieldUpdateOperationsInput | string
   nivel?: Prisma.StringFieldUpdateOperationsInput | string
   inscripciones?: Prisma.InscripcionUncheckedUpdateManyWithoutCursoNestedInput
+  comunicados?: Prisma.ComunicadoUncheckedUpdateManyWithoutCursoNestedInput
 }
 
 export type CursoCreateWithoutInscripcionesInput = {
@@ -490,6 +522,7 @@ export type CursoCreateWithoutInscripcionesInput = {
   paralelo: string
   nivel: string
   cargas?: Prisma.CargaHorariaCreateNestedManyWithoutCursoInput
+  comunicados?: Prisma.ComunicadoCreateNestedManyWithoutCursoInput
 }
 
 export type CursoUncheckedCreateWithoutInscripcionesInput = {
@@ -500,6 +533,7 @@ export type CursoUncheckedCreateWithoutInscripcionesInput = {
   paralelo: string
   nivel: string
   cargas?: Prisma.CargaHorariaUncheckedCreateNestedManyWithoutCursoInput
+  comunicados?: Prisma.ComunicadoUncheckedCreateNestedManyWithoutCursoInput
 }
 
 export type CursoCreateOrConnectWithoutInscripcionesInput = {
@@ -525,6 +559,7 @@ export type CursoUpdateWithoutInscripcionesInput = {
   paralelo?: Prisma.StringFieldUpdateOperationsInput | string
   nivel?: Prisma.StringFieldUpdateOperationsInput | string
   cargas?: Prisma.CargaHorariaUpdateManyWithoutCursoNestedInput
+  comunicados?: Prisma.ComunicadoUpdateManyWithoutCursoNestedInput
 }
 
 export type CursoUncheckedUpdateWithoutInscripcionesInput = {
@@ -534,6 +569,65 @@ export type CursoUncheckedUpdateWithoutInscripcionesInput = {
   grado?: Prisma.StringFieldUpdateOperationsInput | string
   paralelo?: Prisma.StringFieldUpdateOperationsInput | string
   nivel?: Prisma.StringFieldUpdateOperationsInput | string
+  cargas?: Prisma.CargaHorariaUncheckedUpdateManyWithoutCursoNestedInput
+  comunicados?: Prisma.ComunicadoUncheckedUpdateManyWithoutCursoNestedInput
+}
+
+export type CursoCreateWithoutComunicadosInput = {
+  gestion: number
+  turno: string
+  grado: string
+  paralelo: string
+  nivel: string
+  inscripciones?: Prisma.InscripcionCreateNestedManyWithoutCursoInput
+  cargas?: Prisma.CargaHorariaCreateNestedManyWithoutCursoInput
+}
+
+export type CursoUncheckedCreateWithoutComunicadosInput = {
+  id_curso?: number
+  gestion: number
+  turno: string
+  grado: string
+  paralelo: string
+  nivel: string
+  inscripciones?: Prisma.InscripcionUncheckedCreateNestedManyWithoutCursoInput
+  cargas?: Prisma.CargaHorariaUncheckedCreateNestedManyWithoutCursoInput
+}
+
+export type CursoCreateOrConnectWithoutComunicadosInput = {
+  where: Prisma.CursoWhereUniqueInput
+  create: Prisma.XOR<Prisma.CursoCreateWithoutComunicadosInput, Prisma.CursoUncheckedCreateWithoutComunicadosInput>
+}
+
+export type CursoUpsertWithoutComunicadosInput = {
+  update: Prisma.XOR<Prisma.CursoUpdateWithoutComunicadosInput, Prisma.CursoUncheckedUpdateWithoutComunicadosInput>
+  create: Prisma.XOR<Prisma.CursoCreateWithoutComunicadosInput, Prisma.CursoUncheckedCreateWithoutComunicadosInput>
+  where?: Prisma.CursoWhereInput
+}
+
+export type CursoUpdateToOneWithWhereWithoutComunicadosInput = {
+  where?: Prisma.CursoWhereInput
+  data: Prisma.XOR<Prisma.CursoUpdateWithoutComunicadosInput, Prisma.CursoUncheckedUpdateWithoutComunicadosInput>
+}
+
+export type CursoUpdateWithoutComunicadosInput = {
+  gestion?: Prisma.IntFieldUpdateOperationsInput | number
+  turno?: Prisma.StringFieldUpdateOperationsInput | string
+  grado?: Prisma.StringFieldUpdateOperationsInput | string
+  paralelo?: Prisma.StringFieldUpdateOperationsInput | string
+  nivel?: Prisma.StringFieldUpdateOperationsInput | string
+  inscripciones?: Prisma.InscripcionUpdateManyWithoutCursoNestedInput
+  cargas?: Prisma.CargaHorariaUpdateManyWithoutCursoNestedInput
+}
+
+export type CursoUncheckedUpdateWithoutComunicadosInput = {
+  id_curso?: Prisma.IntFieldUpdateOperationsInput | number
+  gestion?: Prisma.IntFieldUpdateOperationsInput | number
+  turno?: Prisma.StringFieldUpdateOperationsInput | string
+  grado?: Prisma.StringFieldUpdateOperationsInput | string
+  paralelo?: Prisma.StringFieldUpdateOperationsInput | string
+  nivel?: Prisma.StringFieldUpdateOperationsInput | string
+  inscripciones?: Prisma.InscripcionUncheckedUpdateManyWithoutCursoNestedInput
   cargas?: Prisma.CargaHorariaUncheckedUpdateManyWithoutCursoNestedInput
 }
 
@@ -545,11 +639,13 @@ export type CursoUncheckedUpdateWithoutInscripcionesInput = {
 export type CursoCountOutputType = {
   inscripciones: number
   cargas: number
+  comunicados: number
 }
 
 export type CursoCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   inscripciones?: boolean | CursoCountOutputTypeCountInscripcionesArgs
   cargas?: boolean | CursoCountOutputTypeCountCargasArgs
+  comunicados?: boolean | CursoCountOutputTypeCountComunicadosArgs
 }
 
 /**
@@ -576,6 +672,13 @@ export type CursoCountOutputTypeCountCargasArgs<ExtArgs extends runtime.Types.Ex
   where?: Prisma.CargaHorariaWhereInput
 }
 
+/**
+ * CursoCountOutputType without action
+ */
+export type CursoCountOutputTypeCountComunicadosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ComunicadoWhereInput
+}
+
 
 export type CursoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id_curso?: boolean
@@ -586,6 +689,7 @@ export type CursoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   nivel?: boolean
   inscripciones?: boolean | Prisma.Curso$inscripcionesArgs<ExtArgs>
   cargas?: boolean | Prisma.Curso$cargasArgs<ExtArgs>
+  comunicados?: boolean | Prisma.Curso$comunicadosArgs<ExtArgs>
   _count?: boolean | Prisma.CursoCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["curso"]>
 
@@ -620,6 +724,7 @@ export type CursoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
 export type CursoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   inscripciones?: boolean | Prisma.Curso$inscripcionesArgs<ExtArgs>
   cargas?: boolean | Prisma.Curso$cargasArgs<ExtArgs>
+  comunicados?: boolean | Prisma.Curso$comunicadosArgs<ExtArgs>
   _count?: boolean | Prisma.CursoCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CursoIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -630,6 +735,7 @@ export type $CursoPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   objects: {
     inscripciones: Prisma.$InscripcionPayload<ExtArgs>[]
     cargas: Prisma.$CargaHorariaPayload<ExtArgs>[]
+    comunicados: Prisma.$ComunicadoPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id_curso: number
@@ -1034,6 +1140,7 @@ export interface Prisma__CursoClient<T, Null = never, ExtArgs extends runtime.Ty
   readonly [Symbol.toStringTag]: "PrismaPromise"
   inscripciones<T extends Prisma.Curso$inscripcionesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Curso$inscripcionesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InscripcionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   cargas<T extends Prisma.Curso$cargasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Curso$cargasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CargaHorariaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  comunicados<T extends Prisma.Curso$comunicadosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Curso$comunicadosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComunicadoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1507,6 +1614,30 @@ export type Curso$cargasArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
   take?: number
   skip?: number
   distinct?: Prisma.CargaHorariaScalarFieldEnum | Prisma.CargaHorariaScalarFieldEnum[]
+}
+
+/**
+ * Curso.comunicados
+ */
+export type Curso$comunicadosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Comunicado
+   */
+  select?: Prisma.ComunicadoSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Comunicado
+   */
+  omit?: Prisma.ComunicadoOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ComunicadoInclude<ExtArgs> | null
+  where?: Prisma.ComunicadoWhereInput
+  orderBy?: Prisma.ComunicadoOrderByWithRelationInput | Prisma.ComunicadoOrderByWithRelationInput[]
+  cursor?: Prisma.ComunicadoWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ComunicadoScalarFieldEnum | Prisma.ComunicadoScalarFieldEnum[]
 }
 
 /**

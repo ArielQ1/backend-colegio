@@ -170,6 +170,7 @@ export type EstudianteWhereInput = {
   inscripciones?: Prisma.InscripcionListRelationFilter
   comunicados?: Prisma.ComunicadoListRelationFilter
   tutores?: Prisma.TutorEstudianteListRelationFilter
+  lecturas?: Prisma.ComunicadoLecturaListRelationFilter
 }
 
 export type EstudianteOrderByWithRelationInput = {
@@ -180,6 +181,7 @@ export type EstudianteOrderByWithRelationInput = {
   inscripciones?: Prisma.InscripcionOrderByRelationAggregateInput
   comunicados?: Prisma.ComunicadoOrderByRelationAggregateInput
   tutores?: Prisma.TutorEstudianteOrderByRelationAggregateInput
+  lecturas?: Prisma.ComunicadoLecturaOrderByRelationAggregateInput
 }
 
 export type EstudianteWhereUniqueInput = Prisma.AtLeast<{
@@ -193,6 +195,7 @@ export type EstudianteWhereUniqueInput = Prisma.AtLeast<{
   inscripciones?: Prisma.InscripcionListRelationFilter
   comunicados?: Prisma.ComunicadoListRelationFilter
   tutores?: Prisma.TutorEstudianteListRelationFilter
+  lecturas?: Prisma.ComunicadoLecturaListRelationFilter
 }, "id_persona" | "codigo_rude">
 
 export type EstudianteOrderByWithAggregationInput = {
@@ -220,6 +223,7 @@ export type EstudianteCreateInput = {
   inscripciones?: Prisma.InscripcionCreateNestedManyWithoutEstudianteInput
   comunicados?: Prisma.ComunicadoCreateNestedManyWithoutEstudianteInput
   tutores?: Prisma.TutorEstudianteCreateNestedManyWithoutEstudianteInput
+  lecturas?: Prisma.ComunicadoLecturaCreateNestedManyWithoutEstudianteInput
 }
 
 export type EstudianteUncheckedCreateInput = {
@@ -229,6 +233,7 @@ export type EstudianteUncheckedCreateInput = {
   inscripciones?: Prisma.InscripcionUncheckedCreateNestedManyWithoutEstudianteInput
   comunicados?: Prisma.ComunicadoUncheckedCreateNestedManyWithoutEstudianteInput
   tutores?: Prisma.TutorEstudianteUncheckedCreateNestedManyWithoutEstudianteInput
+  lecturas?: Prisma.ComunicadoLecturaUncheckedCreateNestedManyWithoutEstudianteInput
 }
 
 export type EstudianteUpdateInput = {
@@ -238,6 +243,7 @@ export type EstudianteUpdateInput = {
   inscripciones?: Prisma.InscripcionUpdateManyWithoutEstudianteNestedInput
   comunicados?: Prisma.ComunicadoUpdateManyWithoutEstudianteNestedInput
   tutores?: Prisma.TutorEstudianteUpdateManyWithoutEstudianteNestedInput
+  lecturas?: Prisma.ComunicadoLecturaUpdateManyWithoutEstudianteNestedInput
 }
 
 export type EstudianteUncheckedUpdateInput = {
@@ -247,6 +253,7 @@ export type EstudianteUncheckedUpdateInput = {
   inscripciones?: Prisma.InscripcionUncheckedUpdateManyWithoutEstudianteNestedInput
   comunicados?: Prisma.ComunicadoUncheckedUpdateManyWithoutEstudianteNestedInput
   tutores?: Prisma.TutorEstudianteUncheckedUpdateManyWithoutEstudianteNestedInput
+  lecturas?: Prisma.ComunicadoLecturaUncheckedUpdateManyWithoutEstudianteNestedInput
 }
 
 export type EstudianteCreateManyInput = {
@@ -374,12 +381,27 @@ export type EstudianteUpdateOneWithoutComunicadosNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.EstudianteUpdateToOneWithWhereWithoutComunicadosInput, Prisma.EstudianteUpdateWithoutComunicadosInput>, Prisma.EstudianteUncheckedUpdateWithoutComunicadosInput>
 }
 
+export type EstudianteCreateNestedOneWithoutLecturasInput = {
+  create?: Prisma.XOR<Prisma.EstudianteCreateWithoutLecturasInput, Prisma.EstudianteUncheckedCreateWithoutLecturasInput>
+  connectOrCreate?: Prisma.EstudianteCreateOrConnectWithoutLecturasInput
+  connect?: Prisma.EstudianteWhereUniqueInput
+}
+
+export type EstudianteUpdateOneRequiredWithoutLecturasNestedInput = {
+  create?: Prisma.XOR<Prisma.EstudianteCreateWithoutLecturasInput, Prisma.EstudianteUncheckedCreateWithoutLecturasInput>
+  connectOrCreate?: Prisma.EstudianteCreateOrConnectWithoutLecturasInput
+  upsert?: Prisma.EstudianteUpsertWithoutLecturasInput
+  connect?: Prisma.EstudianteWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EstudianteUpdateToOneWithWhereWithoutLecturasInput, Prisma.EstudianteUpdateWithoutLecturasInput>, Prisma.EstudianteUncheckedUpdateWithoutLecturasInput>
+}
+
 export type EstudianteCreateWithoutPersonaInput = {
   codigo_rude?: string | null
   fecha_nac?: Date | string | null
   inscripciones?: Prisma.InscripcionCreateNestedManyWithoutEstudianteInput
   comunicados?: Prisma.ComunicadoCreateNestedManyWithoutEstudianteInput
   tutores?: Prisma.TutorEstudianteCreateNestedManyWithoutEstudianteInput
+  lecturas?: Prisma.ComunicadoLecturaCreateNestedManyWithoutEstudianteInput
 }
 
 export type EstudianteUncheckedCreateWithoutPersonaInput = {
@@ -388,6 +410,7 @@ export type EstudianteUncheckedCreateWithoutPersonaInput = {
   inscripciones?: Prisma.InscripcionUncheckedCreateNestedManyWithoutEstudianteInput
   comunicados?: Prisma.ComunicadoUncheckedCreateNestedManyWithoutEstudianteInput
   tutores?: Prisma.TutorEstudianteUncheckedCreateNestedManyWithoutEstudianteInput
+  lecturas?: Prisma.ComunicadoLecturaUncheckedCreateNestedManyWithoutEstudianteInput
 }
 
 export type EstudianteCreateOrConnectWithoutPersonaInput = {
@@ -412,6 +435,7 @@ export type EstudianteUpdateWithoutPersonaInput = {
   inscripciones?: Prisma.InscripcionUpdateManyWithoutEstudianteNestedInput
   comunicados?: Prisma.ComunicadoUpdateManyWithoutEstudianteNestedInput
   tutores?: Prisma.TutorEstudianteUpdateManyWithoutEstudianteNestedInput
+  lecturas?: Prisma.ComunicadoLecturaUpdateManyWithoutEstudianteNestedInput
 }
 
 export type EstudianteUncheckedUpdateWithoutPersonaInput = {
@@ -420,6 +444,7 @@ export type EstudianteUncheckedUpdateWithoutPersonaInput = {
   inscripciones?: Prisma.InscripcionUncheckedUpdateManyWithoutEstudianteNestedInput
   comunicados?: Prisma.ComunicadoUncheckedUpdateManyWithoutEstudianteNestedInput
   tutores?: Prisma.TutorEstudianteUncheckedUpdateManyWithoutEstudianteNestedInput
+  lecturas?: Prisma.ComunicadoLecturaUncheckedUpdateManyWithoutEstudianteNestedInput
 }
 
 export type EstudianteCreateWithoutTutoresInput = {
@@ -428,6 +453,7 @@ export type EstudianteCreateWithoutTutoresInput = {
   persona: Prisma.PersonaCreateNestedOneWithoutEstudianteInput
   inscripciones?: Prisma.InscripcionCreateNestedManyWithoutEstudianteInput
   comunicados?: Prisma.ComunicadoCreateNestedManyWithoutEstudianteInput
+  lecturas?: Prisma.ComunicadoLecturaCreateNestedManyWithoutEstudianteInput
 }
 
 export type EstudianteUncheckedCreateWithoutTutoresInput = {
@@ -436,6 +462,7 @@ export type EstudianteUncheckedCreateWithoutTutoresInput = {
   fecha_nac?: Date | string | null
   inscripciones?: Prisma.InscripcionUncheckedCreateNestedManyWithoutEstudianteInput
   comunicados?: Prisma.ComunicadoUncheckedCreateNestedManyWithoutEstudianteInput
+  lecturas?: Prisma.ComunicadoLecturaUncheckedCreateNestedManyWithoutEstudianteInput
 }
 
 export type EstudianteCreateOrConnectWithoutTutoresInput = {
@@ -460,6 +487,7 @@ export type EstudianteUpdateWithoutTutoresInput = {
   persona?: Prisma.PersonaUpdateOneRequiredWithoutEstudianteNestedInput
   inscripciones?: Prisma.InscripcionUpdateManyWithoutEstudianteNestedInput
   comunicados?: Prisma.ComunicadoUpdateManyWithoutEstudianteNestedInput
+  lecturas?: Prisma.ComunicadoLecturaUpdateManyWithoutEstudianteNestedInput
 }
 
 export type EstudianteUncheckedUpdateWithoutTutoresInput = {
@@ -468,6 +496,7 @@ export type EstudianteUncheckedUpdateWithoutTutoresInput = {
   fecha_nac?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   inscripciones?: Prisma.InscripcionUncheckedUpdateManyWithoutEstudianteNestedInput
   comunicados?: Prisma.ComunicadoUncheckedUpdateManyWithoutEstudianteNestedInput
+  lecturas?: Prisma.ComunicadoLecturaUncheckedUpdateManyWithoutEstudianteNestedInput
 }
 
 export type EstudianteCreateWithoutInscripcionesInput = {
@@ -476,6 +505,7 @@ export type EstudianteCreateWithoutInscripcionesInput = {
   persona: Prisma.PersonaCreateNestedOneWithoutEstudianteInput
   comunicados?: Prisma.ComunicadoCreateNestedManyWithoutEstudianteInput
   tutores?: Prisma.TutorEstudianteCreateNestedManyWithoutEstudianteInput
+  lecturas?: Prisma.ComunicadoLecturaCreateNestedManyWithoutEstudianteInput
 }
 
 export type EstudianteUncheckedCreateWithoutInscripcionesInput = {
@@ -484,6 +514,7 @@ export type EstudianteUncheckedCreateWithoutInscripcionesInput = {
   fecha_nac?: Date | string | null
   comunicados?: Prisma.ComunicadoUncheckedCreateNestedManyWithoutEstudianteInput
   tutores?: Prisma.TutorEstudianteUncheckedCreateNestedManyWithoutEstudianteInput
+  lecturas?: Prisma.ComunicadoLecturaUncheckedCreateNestedManyWithoutEstudianteInput
 }
 
 export type EstudianteCreateOrConnectWithoutInscripcionesInput = {
@@ -508,6 +539,7 @@ export type EstudianteUpdateWithoutInscripcionesInput = {
   persona?: Prisma.PersonaUpdateOneRequiredWithoutEstudianteNestedInput
   comunicados?: Prisma.ComunicadoUpdateManyWithoutEstudianteNestedInput
   tutores?: Prisma.TutorEstudianteUpdateManyWithoutEstudianteNestedInput
+  lecturas?: Prisma.ComunicadoLecturaUpdateManyWithoutEstudianteNestedInput
 }
 
 export type EstudianteUncheckedUpdateWithoutInscripcionesInput = {
@@ -516,6 +548,7 @@ export type EstudianteUncheckedUpdateWithoutInscripcionesInput = {
   fecha_nac?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   comunicados?: Prisma.ComunicadoUncheckedUpdateManyWithoutEstudianteNestedInput
   tutores?: Prisma.TutorEstudianteUncheckedUpdateManyWithoutEstudianteNestedInput
+  lecturas?: Prisma.ComunicadoLecturaUncheckedUpdateManyWithoutEstudianteNestedInput
 }
 
 export type EstudianteCreateWithoutComunicadosInput = {
@@ -524,6 +557,7 @@ export type EstudianteCreateWithoutComunicadosInput = {
   persona: Prisma.PersonaCreateNestedOneWithoutEstudianteInput
   inscripciones?: Prisma.InscripcionCreateNestedManyWithoutEstudianteInput
   tutores?: Prisma.TutorEstudianteCreateNestedManyWithoutEstudianteInput
+  lecturas?: Prisma.ComunicadoLecturaCreateNestedManyWithoutEstudianteInput
 }
 
 export type EstudianteUncheckedCreateWithoutComunicadosInput = {
@@ -532,6 +566,7 @@ export type EstudianteUncheckedCreateWithoutComunicadosInput = {
   fecha_nac?: Date | string | null
   inscripciones?: Prisma.InscripcionUncheckedCreateNestedManyWithoutEstudianteInput
   tutores?: Prisma.TutorEstudianteUncheckedCreateNestedManyWithoutEstudianteInput
+  lecturas?: Prisma.ComunicadoLecturaUncheckedCreateNestedManyWithoutEstudianteInput
 }
 
 export type EstudianteCreateOrConnectWithoutComunicadosInput = {
@@ -556,6 +591,7 @@ export type EstudianteUpdateWithoutComunicadosInput = {
   persona?: Prisma.PersonaUpdateOneRequiredWithoutEstudianteNestedInput
   inscripciones?: Prisma.InscripcionUpdateManyWithoutEstudianteNestedInput
   tutores?: Prisma.TutorEstudianteUpdateManyWithoutEstudianteNestedInput
+  lecturas?: Prisma.ComunicadoLecturaUpdateManyWithoutEstudianteNestedInput
 }
 
 export type EstudianteUncheckedUpdateWithoutComunicadosInput = {
@@ -563,6 +599,59 @@ export type EstudianteUncheckedUpdateWithoutComunicadosInput = {
   codigo_rude?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fecha_nac?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   inscripciones?: Prisma.InscripcionUncheckedUpdateManyWithoutEstudianteNestedInput
+  tutores?: Prisma.TutorEstudianteUncheckedUpdateManyWithoutEstudianteNestedInput
+  lecturas?: Prisma.ComunicadoLecturaUncheckedUpdateManyWithoutEstudianteNestedInput
+}
+
+export type EstudianteCreateWithoutLecturasInput = {
+  codigo_rude?: string | null
+  fecha_nac?: Date | string | null
+  persona: Prisma.PersonaCreateNestedOneWithoutEstudianteInput
+  inscripciones?: Prisma.InscripcionCreateNestedManyWithoutEstudianteInput
+  comunicados?: Prisma.ComunicadoCreateNestedManyWithoutEstudianteInput
+  tutores?: Prisma.TutorEstudianteCreateNestedManyWithoutEstudianteInput
+}
+
+export type EstudianteUncheckedCreateWithoutLecturasInput = {
+  id_persona: string
+  codigo_rude?: string | null
+  fecha_nac?: Date | string | null
+  inscripciones?: Prisma.InscripcionUncheckedCreateNestedManyWithoutEstudianteInput
+  comunicados?: Prisma.ComunicadoUncheckedCreateNestedManyWithoutEstudianteInput
+  tutores?: Prisma.TutorEstudianteUncheckedCreateNestedManyWithoutEstudianteInput
+}
+
+export type EstudianteCreateOrConnectWithoutLecturasInput = {
+  where: Prisma.EstudianteWhereUniqueInput
+  create: Prisma.XOR<Prisma.EstudianteCreateWithoutLecturasInput, Prisma.EstudianteUncheckedCreateWithoutLecturasInput>
+}
+
+export type EstudianteUpsertWithoutLecturasInput = {
+  update: Prisma.XOR<Prisma.EstudianteUpdateWithoutLecturasInput, Prisma.EstudianteUncheckedUpdateWithoutLecturasInput>
+  create: Prisma.XOR<Prisma.EstudianteCreateWithoutLecturasInput, Prisma.EstudianteUncheckedCreateWithoutLecturasInput>
+  where?: Prisma.EstudianteWhereInput
+}
+
+export type EstudianteUpdateToOneWithWhereWithoutLecturasInput = {
+  where?: Prisma.EstudianteWhereInput
+  data: Prisma.XOR<Prisma.EstudianteUpdateWithoutLecturasInput, Prisma.EstudianteUncheckedUpdateWithoutLecturasInput>
+}
+
+export type EstudianteUpdateWithoutLecturasInput = {
+  codigo_rude?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fecha_nac?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  persona?: Prisma.PersonaUpdateOneRequiredWithoutEstudianteNestedInput
+  inscripciones?: Prisma.InscripcionUpdateManyWithoutEstudianteNestedInput
+  comunicados?: Prisma.ComunicadoUpdateManyWithoutEstudianteNestedInput
+  tutores?: Prisma.TutorEstudianteUpdateManyWithoutEstudianteNestedInput
+}
+
+export type EstudianteUncheckedUpdateWithoutLecturasInput = {
+  id_persona?: Prisma.StringFieldUpdateOperationsInput | string
+  codigo_rude?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fecha_nac?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  inscripciones?: Prisma.InscripcionUncheckedUpdateManyWithoutEstudianteNestedInput
+  comunicados?: Prisma.ComunicadoUncheckedUpdateManyWithoutEstudianteNestedInput
   tutores?: Prisma.TutorEstudianteUncheckedUpdateManyWithoutEstudianteNestedInput
 }
 
@@ -575,12 +664,14 @@ export type EstudianteCountOutputType = {
   inscripciones: number
   comunicados: number
   tutores: number
+  lecturas: number
 }
 
 export type EstudianteCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   inscripciones?: boolean | EstudianteCountOutputTypeCountInscripcionesArgs
   comunicados?: boolean | EstudianteCountOutputTypeCountComunicadosArgs
   tutores?: boolean | EstudianteCountOutputTypeCountTutoresArgs
+  lecturas?: boolean | EstudianteCountOutputTypeCountLecturasArgs
 }
 
 /**
@@ -614,6 +705,13 @@ export type EstudianteCountOutputTypeCountTutoresArgs<ExtArgs extends runtime.Ty
   where?: Prisma.TutorEstudianteWhereInput
 }
 
+/**
+ * EstudianteCountOutputType without action
+ */
+export type EstudianteCountOutputTypeCountLecturasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ComunicadoLecturaWhereInput
+}
+
 
 export type EstudianteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id_persona?: boolean
@@ -623,6 +721,7 @@ export type EstudianteSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   inscripciones?: boolean | Prisma.Estudiante$inscripcionesArgs<ExtArgs>
   comunicados?: boolean | Prisma.Estudiante$comunicadosArgs<ExtArgs>
   tutores?: boolean | Prisma.Estudiante$tutoresArgs<ExtArgs>
+  lecturas?: boolean | Prisma.Estudiante$lecturasArgs<ExtArgs>
   _count?: boolean | Prisma.EstudianteCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["estudiante"]>
 
@@ -652,6 +751,7 @@ export type EstudianteInclude<ExtArgs extends runtime.Types.Extensions.InternalA
   inscripciones?: boolean | Prisma.Estudiante$inscripcionesArgs<ExtArgs>
   comunicados?: boolean | Prisma.Estudiante$comunicadosArgs<ExtArgs>
   tutores?: boolean | Prisma.Estudiante$tutoresArgs<ExtArgs>
+  lecturas?: boolean | Prisma.Estudiante$lecturasArgs<ExtArgs>
   _count?: boolean | Prisma.EstudianteCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type EstudianteIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -668,6 +768,7 @@ export type $EstudiantePayload<ExtArgs extends runtime.Types.Extensions.Internal
     inscripciones: Prisma.$InscripcionPayload<ExtArgs>[]
     comunicados: Prisma.$ComunicadoPayload<ExtArgs>[]
     tutores: Prisma.$TutorEstudiantePayload<ExtArgs>[]
+    lecturas: Prisma.$ComunicadoLecturaPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id_persona: string
@@ -1071,6 +1172,7 @@ export interface Prisma__EstudianteClient<T, Null = never, ExtArgs extends runti
   inscripciones<T extends Prisma.Estudiante$inscripcionesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Estudiante$inscripcionesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InscripcionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   comunicados<T extends Prisma.Estudiante$comunicadosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Estudiante$comunicadosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComunicadoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   tutores<T extends Prisma.Estudiante$tutoresArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Estudiante$tutoresArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TutorEstudiantePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  lecturas<T extends Prisma.Estudiante$lecturasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Estudiante$lecturasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComunicadoLecturaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1573,6 +1675,30 @@ export type Estudiante$tutoresArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.TutorEstudianteScalarFieldEnum | Prisma.TutorEstudianteScalarFieldEnum[]
+}
+
+/**
+ * Estudiante.lecturas
+ */
+export type Estudiante$lecturasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ComunicadoLectura
+   */
+  select?: Prisma.ComunicadoLecturaSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ComunicadoLectura
+   */
+  omit?: Prisma.ComunicadoLecturaOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ComunicadoLecturaInclude<ExtArgs> | null
+  where?: Prisma.ComunicadoLecturaWhereInput
+  orderBy?: Prisma.ComunicadoLecturaOrderByWithRelationInput | Prisma.ComunicadoLecturaOrderByWithRelationInput[]
+  cursor?: Prisma.ComunicadoLecturaWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ComunicadoLecturaScalarFieldEnum | Prisma.ComunicadoLecturaScalarFieldEnum[]
 }
 
 /**

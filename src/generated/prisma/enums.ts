@@ -36,3 +36,12 @@ export const TipoComunicado = {
 } as const
 
 export type TipoComunicado = (typeof TipoComunicado)[keyof typeof TipoComunicado]
+
+
+export const AlcanceComunicado = {
+  TODOS: 'TODOS',
+  CURSO: 'CURSO',
+  INDIVIDUAL: 'INDIVIDUAL'
+} as const
+
+export type AlcanceComunicado = (typeof AlcanceComunicado)[keyof typeof AlcanceComunicado]

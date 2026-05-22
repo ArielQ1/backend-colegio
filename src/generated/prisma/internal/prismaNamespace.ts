@@ -395,7 +395,8 @@ export const ModelName = {
   CargaHoraria: 'CargaHoraria',
   Inscripcion: 'Inscripcion',
   Calificacion: 'Calificacion',
-  Comunicado: 'Comunicado'
+  Comunicado: 'Comunicado',
+  ComunicadoLectura: 'ComunicadoLectura'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -411,7 +412,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "persona" | "usuario" | "estudiante" | "padreFamilia" | "profesor" | "tutorEstudiante" | "curso" | "materia" | "cargaHoraria" | "inscripcion" | "calificacion" | "comunicado"
+    modelProps: "persona" | "usuario" | "estudiante" | "padreFamilia" | "profesor" | "tutorEstudiante" | "curso" | "materia" | "cargaHoraria" | "inscripcion" | "calificacion" | "comunicado" | "comunicadoLectura"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1303,6 +1304,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ComunicadoLectura: {
+      payload: Prisma.$ComunicadoLecturaPayload<ExtArgs>
+      fields: Prisma.ComunicadoLecturaFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ComunicadoLecturaFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComunicadoLecturaPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ComunicadoLecturaFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComunicadoLecturaPayload>
+        }
+        findFirst: {
+          args: Prisma.ComunicadoLecturaFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComunicadoLecturaPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ComunicadoLecturaFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComunicadoLecturaPayload>
+        }
+        findMany: {
+          args: Prisma.ComunicadoLecturaFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComunicadoLecturaPayload>[]
+        }
+        create: {
+          args: Prisma.ComunicadoLecturaCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComunicadoLecturaPayload>
+        }
+        createMany: {
+          args: Prisma.ComunicadoLecturaCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ComunicadoLecturaCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComunicadoLecturaPayload>[]
+        }
+        delete: {
+          args: Prisma.ComunicadoLecturaDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComunicadoLecturaPayload>
+        }
+        update: {
+          args: Prisma.ComunicadoLecturaUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComunicadoLecturaPayload>
+        }
+        deleteMany: {
+          args: Prisma.ComunicadoLecturaDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ComunicadoLecturaUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ComunicadoLecturaUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComunicadoLecturaPayload>[]
+        }
+        upsert: {
+          args: Prisma.ComunicadoLecturaUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComunicadoLecturaPayload>
+        }
+        aggregate: {
+          args: Prisma.ComunicadoLecturaAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateComunicadoLectura>
+        }
+        groupBy: {
+          args: Prisma.ComunicadoLecturaGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ComunicadoLecturaGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ComunicadoLecturaCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ComunicadoLecturaCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1460,15 +1535,26 @@ export type CalificacionScalarFieldEnum = (typeof CalificacionScalarFieldEnum)[k
 export const ComunicadoScalarFieldEnum = {
   id_comunicado: 'id_comunicado',
   id_profesor: 'id_profesor',
+  id_autor_admin: 'id_autor_admin',
   id_estudiante: 'id_estudiante',
+  id_curso: 'id_curso',
+  alcance: 'alcance',
   tipo: 'tipo',
   descripcion: 'descripcion',
-  fecha: 'fecha',
-  leido_por_padre: 'leido_por_padre',
-  es_grupo: 'es_grupo'
+  fecha: 'fecha'
 } as const
 
 export type ComunicadoScalarFieldEnum = (typeof ComunicadoScalarFieldEnum)[keyof typeof ComunicadoScalarFieldEnum]
+
+
+export const ComunicadoLecturaScalarFieldEnum = {
+  id_comunicado: 'id_comunicado',
+  id_estudiante: 'id_estudiante',
+  leido_por_padre: 'leido_por_padre',
+  fecha_lectura: 'fecha_lectura'
+} as const
+
+export type ComunicadoLecturaScalarFieldEnum = (typeof ComunicadoLecturaScalarFieldEnum)[keyof typeof ComunicadoLecturaScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1589,6 +1675,20 @@ export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
  * Reference to a field of type 'Float[]'
  */
 export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+/**
+ * Reference to a field of type 'AlcanceComunicado'
+ */
+export type EnumAlcanceComunicadoFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AlcanceComunicado'>
+    
+
+
+/**
+ * Reference to a field of type 'AlcanceComunicado[]'
+ */
+export type ListEnumAlcanceComunicadoFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AlcanceComunicado[]'>
     
 
 
@@ -1727,6 +1827,7 @@ export type GlobalOmitConfig = {
   inscripcion?: Prisma.InscripcionOmit
   calificacion?: Prisma.CalificacionOmit
   comunicado?: Prisma.ComunicadoOmit
+  comunicadoLectura?: Prisma.ComunicadoLecturaOmit
 }
 
 /* Types for Logging */

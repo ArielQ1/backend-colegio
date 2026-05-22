@@ -32,4 +32,8 @@ export class CreateProfesorDto {
   @IsString()
   @IsOptional()
   especialidad?: string;
+
+  @IsString()
+  @IsOptional()
+  rol?: string;
 }

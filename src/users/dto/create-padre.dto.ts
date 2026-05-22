@@ -32,4 +32,8 @@ export class CreatePadreDto {
   @IsString()
   @IsOptional()
   parentesco?: string;
+
+  @IsString()
+  @IsOptional()
+  rol?: string;
 }

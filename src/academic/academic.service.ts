@@ -362,6 +362,36 @@ export class AcademicService {
     };
   }
 
+  async getAllCargas(pagination: PaginationDto) {
+    const page = pagination.page || 1;
+    const limit = pagination.limit || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.cargaHoraria.findMany({
+        skip,
+        take: limit,
+        include: {
+          profesor: {
+            include: {
+              persona: {
+                select: { id_persona: true, nombres: true, apellidos: true, carnet: true },
+              },
+            },
+          },
+          materia: true,
+          curso: true,
+        },
+      }),
+      this.prisma.cargaHoraria.count(),
+    ]);
+
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
+  }
+
   async getCargasPorProfesor(idProfesor: string, pagination: PaginationDto) {
     const page = pagination.page || 1;
     const limit = pagination.limit || 20;

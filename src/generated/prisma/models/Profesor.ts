@@ -317,10 +317,12 @@ export type ProfesorCreateNestedOneWithoutComunicadosInput = {
   connect?: Prisma.ProfesorWhereUniqueInput
 }
 
-export type ProfesorUpdateOneRequiredWithoutComunicadosNestedInput = {
+export type ProfesorUpdateOneWithoutComunicadosNestedInput = {
   create?: Prisma.XOR<Prisma.ProfesorCreateWithoutComunicadosInput, Prisma.ProfesorUncheckedCreateWithoutComunicadosInput>
   connectOrCreate?: Prisma.ProfesorCreateOrConnectWithoutComunicadosInput
   upsert?: Prisma.ProfesorUpsertWithoutComunicadosInput
+  disconnect?: Prisma.ProfesorWhereInput | boolean
+  delete?: Prisma.ProfesorWhereInput | boolean
   connect?: Prisma.ProfesorWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProfesorUpdateToOneWithWhereWithoutComunicadosInput, Prisma.ProfesorUpdateWithoutComunicadosInput>, Prisma.ProfesorUncheckedUpdateWithoutComunicadosInput>
 }

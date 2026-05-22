@@ -620,4 +620,91 @@ export class UsersService {
       meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
     };
   }
+
+  async updateEstudiante(id: string, data: Partial<CreateUserDto>) {
+    const estudiante = await this.prisma.estudiante.findUnique({ where: { id_persona: id } });
+    if (!estudiante) throw new NotFoundException('Estudiante no encontrado');
+
+    const fechaNac = data.fecha_nac ? this.parseFechaNacimiento(data.fecha_nac) : undefined;
+
+    return this.prisma.persona.update({
+      where: { id_persona: id },
+      data: {
+        nombres: data.nombres?.trim(),
+        apellidos: data.apellidos?.trim(),
+        carnet: data.carnet?.trim(),
+        correo: data.correo?.trim(),
+        celular: data.celular?.trim(),
+        estudiante: {
+          update: {
+            codigo_rude: data.codigo_rude?.trim(),
+            ...(fechaNac !== undefined && { fecha_nac: fechaNac })
+          }
+        }
+      },
+      include: { estudiante: true }
+    });
+  }
+
+  async deleteEstudiante(id: string) {
+    const estudiante = await this.prisma.estudiante.findUnique({ where: { id_persona: id } });
+    if (!estudiante) throw new NotFoundException('Estudiante no encontrado');
+    return this.prisma.persona.delete({ where: { id_persona: id } });
+  }
+
+  async updatePadre(id: string, data: Partial<CreatePadreDto>) {
+    const padre = await this.prisma.padreFamilia.findUnique({ where: { id_persona: id } });
+    if (!padre) throw new NotFoundException('Padre no encontrado');
+
+    return this.prisma.persona.update({
+      where: { id_persona: id },
+      data: {
+        nombres: data.nombres?.trim(),
+        apellidos: data.apellidos?.trim(),
+        carnet: data.carnet?.trim(),
+        correo: data.correo?.trim(),
+        celular: data.celular?.trim(),
+        padre_familia: {
+          update: {
+            parentesco: data.parentesco?.trim()
+          }
+        }
+      },
+      include: { padre_familia: true }
+    });
+  }
+
+  async deletePadre(id: string) {
+    const padre = await this.prisma.padreFamilia.findUnique({ where: { id_persona: id } });
+    if (!padre) throw new NotFoundException('Padre no encontrado');
+    return this.prisma.persona.delete({ where: { id_persona: id } });
+  }
+
+  async updateProfesor(id: string, data: Partial<CreateProfesorDto>) {
+    const profesor = await this.prisma.profesor.findUnique({ where: { id_persona: id } });
+    if (!profesor) throw new NotFoundException('Profesor no encontrado');
+
+    return this.prisma.persona.update({
+      where: { id_persona: id },
+      data: {
+        nombres: data.nombres?.trim(),
+        apellidos: data.apellidos?.trim(),
+        carnet: data.carnet?.trim(),
+        correo: data.correo?.trim(),
+        celular: data.celular?.trim(),
+        profesor: {
+          update: {
+            especialidad: data.especialidad?.trim()
+          }
+        }
+      },
+      include: { profesor: true }
+    });
+  }
+
+  async deleteProfesor(id: string) {
+    const profesor = await this.prisma.profesor.findUnique({ where: { id_persona: id } });
+    if (!profesor) throw new NotFoundException('Profesor no encontrado');
+    return this.prisma.persona.delete({ where: { id_persona: id } });
+  }
 }

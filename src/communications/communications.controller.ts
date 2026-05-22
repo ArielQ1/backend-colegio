@@ -41,6 +41,26 @@ export class CommunicationsController {
     return this.communicationsService.emitirComunicado({
       id_profesor: idPersona,
       id_estudiante: body.id_estudiante,
+      id_curso: body.id_curso,
+      tipo: body.tipo,
+      descripcion: body.descripcion,
+    });
+  }
+
+  @Post('admin')
+  @Roles(RolUsuario.ADMIN)
+  createComunicadoAdmin(
+    @Req() req: AuthenticatedRequest,
+    @Body() body: EmitirComunicadoDto,
+  ) {
+    const idAdmin = req.user?.id_persona;
+    if (!idAdmin) {
+      throw new BadRequestException('No se pudo identificar al usuario');
+    }
+    return this.communicationsService.emitirComunicadoAdmin({
+      id_admin: idAdmin,
+      id_estudiante: body.id_estudiante,
+      id_curso: body.id_curso,
       tipo: body.tipo,
       descripcion: body.descripcion,
     });
@@ -98,6 +118,7 @@ export class CommunicationsController {
     @Query('fechaHasta') fechaHasta?: string,
     @Query('id_profesor') idProfesor?: string,
     @Query('id_estudiante') idEstudiante?: string,
+    @Query('id_curso') idCurso?: string,
   ) {
     const filtros: any = {};
     if (tipo) filtros.tipo = tipo;
@@ -106,6 +127,7 @@ export class CommunicationsController {
     if (fechaHasta) filtros.fechaHasta = new Date(fechaHasta);
     if (idProfesor) filtros.id_profesor = idProfesor;
     if (idEstudiante) filtros.id_estudiante = idEstudiante;
+    if (idCurso) filtros.id_curso = parseInt(idCurso);
 
     return this.communicationsService.getTodosLosComunicados(pagination, filtros);
   }

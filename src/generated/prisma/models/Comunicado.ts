@@ -28,86 +28,96 @@ export type AggregateComunicado = {
 
 export type ComunicadoAvgAggregateOutputType = {
   id_comunicado: number | null
+  id_curso: number | null
 }
 
 export type ComunicadoSumAggregateOutputType = {
   id_comunicado: number | null
+  id_curso: number | null
 }
 
 export type ComunicadoMinAggregateOutputType = {
   id_comunicado: number | null
   id_profesor: string | null
+  id_autor_admin: string | null
   id_estudiante: string | null
+  id_curso: number | null
+  alcance: $Enums.AlcanceComunicado | null
   tipo: $Enums.TipoComunicado | null
   descripcion: string | null
   fecha: Date | null
-  leido_por_padre: boolean | null
-  es_grupo: boolean | null
 }
 
 export type ComunicadoMaxAggregateOutputType = {
   id_comunicado: number | null
   id_profesor: string | null
+  id_autor_admin: string | null
   id_estudiante: string | null
+  id_curso: number | null
+  alcance: $Enums.AlcanceComunicado | null
   tipo: $Enums.TipoComunicado | null
   descripcion: string | null
   fecha: Date | null
-  leido_por_padre: boolean | null
-  es_grupo: boolean | null
 }
 
 export type ComunicadoCountAggregateOutputType = {
   id_comunicado: number
   id_profesor: number
+  id_autor_admin: number
   id_estudiante: number
+  id_curso: number
+  alcance: number
   tipo: number
   descripcion: number
   fecha: number
-  leido_por_padre: number
-  es_grupo: number
   _all: number
 }
 
 
 export type ComunicadoAvgAggregateInputType = {
   id_comunicado?: true
+  id_curso?: true
 }
 
 export type ComunicadoSumAggregateInputType = {
   id_comunicado?: true
+  id_curso?: true
 }
 
 export type ComunicadoMinAggregateInputType = {
   id_comunicado?: true
   id_profesor?: true
+  id_autor_admin?: true
   id_estudiante?: true
+  id_curso?: true
+  alcance?: true
   tipo?: true
   descripcion?: true
   fecha?: true
-  leido_por_padre?: true
-  es_grupo?: true
 }
 
 export type ComunicadoMaxAggregateInputType = {
   id_comunicado?: true
   id_profesor?: true
+  id_autor_admin?: true
   id_estudiante?: true
+  id_curso?: true
+  alcance?: true
   tipo?: true
   descripcion?: true
   fecha?: true
-  leido_por_padre?: true
-  es_grupo?: true
 }
 
 export type ComunicadoCountAggregateInputType = {
   id_comunicado?: true
   id_profesor?: true
+  id_autor_admin?: true
   id_estudiante?: true
+  id_curso?: true
+  alcance?: true
   tipo?: true
   descripcion?: true
   fecha?: true
-  leido_por_padre?: true
-  es_grupo?: true
   _all?: true
 }
 
@@ -199,13 +209,14 @@ export type ComunicadoGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
 
 export type ComunicadoGroupByOutputType = {
   id_comunicado: number
-  id_profesor: string
+  id_profesor: string | null
+  id_autor_admin: string | null
   id_estudiante: string | null
+  id_curso: number | null
+  alcance: $Enums.AlcanceComunicado
   tipo: $Enums.TipoComunicado
   descripcion: string
   fecha: Date
-  leido_por_padre: boolean
-  es_grupo: boolean
   _count: ComunicadoCountAggregateOutputType | null
   _avg: ComunicadoAvgAggregateOutputType | null
   _sum: ComunicadoSumAggregateOutputType | null
@@ -233,28 +244,36 @@ export type ComunicadoWhereInput = {
   OR?: Prisma.ComunicadoWhereInput[]
   NOT?: Prisma.ComunicadoWhereInput | Prisma.ComunicadoWhereInput[]
   id_comunicado?: Prisma.IntFilter<"Comunicado"> | number
-  id_profesor?: Prisma.StringFilter<"Comunicado"> | string
+  id_profesor?: Prisma.StringNullableFilter<"Comunicado"> | string | null
+  id_autor_admin?: Prisma.StringNullableFilter<"Comunicado"> | string | null
   id_estudiante?: Prisma.StringNullableFilter<"Comunicado"> | string | null
+  id_curso?: Prisma.IntNullableFilter<"Comunicado"> | number | null
+  alcance?: Prisma.EnumAlcanceComunicadoFilter<"Comunicado"> | $Enums.AlcanceComunicado
   tipo?: Prisma.EnumTipoComunicadoFilter<"Comunicado"> | $Enums.TipoComunicado
   descripcion?: Prisma.StringFilter<"Comunicado"> | string
   fecha?: Prisma.DateTimeFilter<"Comunicado"> | Date | string
-  leido_por_padre?: Prisma.BoolFilter<"Comunicado"> | boolean
-  es_grupo?: Prisma.BoolFilter<"Comunicado"> | boolean
-  profesor?: Prisma.XOR<Prisma.ProfesorScalarRelationFilter, Prisma.ProfesorWhereInput>
+  profesor?: Prisma.XOR<Prisma.ProfesorNullableScalarRelationFilter, Prisma.ProfesorWhereInput> | null
+  autor_admin?: Prisma.XOR<Prisma.PersonaNullableScalarRelationFilter, Prisma.PersonaWhereInput> | null
   estudiante?: Prisma.XOR<Prisma.EstudianteNullableScalarRelationFilter, Prisma.EstudianteWhereInput> | null
+  curso?: Prisma.XOR<Prisma.CursoNullableScalarRelationFilter, Prisma.CursoWhereInput> | null
+  lecturas?: Prisma.ComunicadoLecturaListRelationFilter
 }
 
 export type ComunicadoOrderByWithRelationInput = {
   id_comunicado?: Prisma.SortOrder
-  id_profesor?: Prisma.SortOrder
+  id_profesor?: Prisma.SortOrderInput | Prisma.SortOrder
+  id_autor_admin?: Prisma.SortOrderInput | Prisma.SortOrder
   id_estudiante?: Prisma.SortOrderInput | Prisma.SortOrder
+  id_curso?: Prisma.SortOrderInput | Prisma.SortOrder
+  alcance?: Prisma.SortOrder
   tipo?: Prisma.SortOrder
   descripcion?: Prisma.SortOrder
   fecha?: Prisma.SortOrder
-  leido_por_padre?: Prisma.SortOrder
-  es_grupo?: Prisma.SortOrder
   profesor?: Prisma.ProfesorOrderByWithRelationInput
+  autor_admin?: Prisma.PersonaOrderByWithRelationInput
   estudiante?: Prisma.EstudianteOrderByWithRelationInput
+  curso?: Prisma.CursoOrderByWithRelationInput
+  lecturas?: Prisma.ComunicadoLecturaOrderByRelationAggregateInput
 }
 
 export type ComunicadoWhereUniqueInput = Prisma.AtLeast<{
@@ -262,26 +281,31 @@ export type ComunicadoWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ComunicadoWhereInput | Prisma.ComunicadoWhereInput[]
   OR?: Prisma.ComunicadoWhereInput[]
   NOT?: Prisma.ComunicadoWhereInput | Prisma.ComunicadoWhereInput[]
-  id_profesor?: Prisma.StringFilter<"Comunicado"> | string
+  id_profesor?: Prisma.StringNullableFilter<"Comunicado"> | string | null
+  id_autor_admin?: Prisma.StringNullableFilter<"Comunicado"> | string | null
   id_estudiante?: Prisma.StringNullableFilter<"Comunicado"> | string | null
+  id_curso?: Prisma.IntNullableFilter<"Comunicado"> | number | null
+  alcance?: Prisma.EnumAlcanceComunicadoFilter<"Comunicado"> | $Enums.AlcanceComunicado
   tipo?: Prisma.EnumTipoComunicadoFilter<"Comunicado"> | $Enums.TipoComunicado
   descripcion?: Prisma.StringFilter<"Comunicado"> | string
   fecha?: Prisma.DateTimeFilter<"Comunicado"> | Date | string
-  leido_por_padre?: Prisma.BoolFilter<"Comunicado"> | boolean
-  es_grupo?: Prisma.BoolFilter<"Comunicado"> | boolean
-  profesor?: Prisma.XOR<Prisma.ProfesorScalarRelationFilter, Prisma.ProfesorWhereInput>
+  profesor?: Prisma.XOR<Prisma.ProfesorNullableScalarRelationFilter, Prisma.ProfesorWhereInput> | null
+  autor_admin?: Prisma.XOR<Prisma.PersonaNullableScalarRelationFilter, Prisma.PersonaWhereInput> | null
   estudiante?: Prisma.XOR<Prisma.EstudianteNullableScalarRelationFilter, Prisma.EstudianteWhereInput> | null
+  curso?: Prisma.XOR<Prisma.CursoNullableScalarRelationFilter, Prisma.CursoWhereInput> | null
+  lecturas?: Prisma.ComunicadoLecturaListRelationFilter
 }, "id_comunicado">
 
 export type ComunicadoOrderByWithAggregationInput = {
   id_comunicado?: Prisma.SortOrder
-  id_profesor?: Prisma.SortOrder
+  id_profesor?: Prisma.SortOrderInput | Prisma.SortOrder
+  id_autor_admin?: Prisma.SortOrderInput | Prisma.SortOrder
   id_estudiante?: Prisma.SortOrderInput | Prisma.SortOrder
+  id_curso?: Prisma.SortOrderInput | Prisma.SortOrder
+  alcance?: Prisma.SortOrder
   tipo?: Prisma.SortOrder
   descripcion?: Prisma.SortOrder
   fecha?: Prisma.SortOrder
-  leido_por_padre?: Prisma.SortOrder
-  es_grupo?: Prisma.SortOrder
   _count?: Prisma.ComunicadoCountOrderByAggregateInput
   _avg?: Prisma.ComunicadoAvgOrderByAggregateInput
   _max?: Prisma.ComunicadoMaxOrderByAggregateInput
@@ -294,85 +318,95 @@ export type ComunicadoScalarWhereWithAggregatesInput = {
   OR?: Prisma.ComunicadoScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ComunicadoScalarWhereWithAggregatesInput | Prisma.ComunicadoScalarWhereWithAggregatesInput[]
   id_comunicado?: Prisma.IntWithAggregatesFilter<"Comunicado"> | number
-  id_profesor?: Prisma.StringWithAggregatesFilter<"Comunicado"> | string
+  id_profesor?: Prisma.StringNullableWithAggregatesFilter<"Comunicado"> | string | null
+  id_autor_admin?: Prisma.StringNullableWithAggregatesFilter<"Comunicado"> | string | null
   id_estudiante?: Prisma.StringNullableWithAggregatesFilter<"Comunicado"> | string | null
+  id_curso?: Prisma.IntNullableWithAggregatesFilter<"Comunicado"> | number | null
+  alcance?: Prisma.EnumAlcanceComunicadoWithAggregatesFilter<"Comunicado"> | $Enums.AlcanceComunicado
   tipo?: Prisma.EnumTipoComunicadoWithAggregatesFilter<"Comunicado"> | $Enums.TipoComunicado
   descripcion?: Prisma.StringWithAggregatesFilter<"Comunicado"> | string
   fecha?: Prisma.DateTimeWithAggregatesFilter<"Comunicado"> | Date | string
-  leido_por_padre?: Prisma.BoolWithAggregatesFilter<"Comunicado"> | boolean
-  es_grupo?: Prisma.BoolWithAggregatesFilter<"Comunicado"> | boolean
 }
 
 export type ComunicadoCreateInput = {
+  alcance: $Enums.AlcanceComunicado
   tipo: $Enums.TipoComunicado
   descripcion: string
   fecha?: Date | string
-  leido_por_padre?: boolean
-  es_grupo?: boolean
-  profesor: Prisma.ProfesorCreateNestedOneWithoutComunicadosInput
+  profesor?: Prisma.ProfesorCreateNestedOneWithoutComunicadosInput
+  autor_admin?: Prisma.PersonaCreateNestedOneWithoutComunicados_adminInput
   estudiante?: Prisma.EstudianteCreateNestedOneWithoutComunicadosInput
+  curso?: Prisma.CursoCreateNestedOneWithoutComunicadosInput
+  lecturas?: Prisma.ComunicadoLecturaCreateNestedManyWithoutComunicadoInput
 }
 
 export type ComunicadoUncheckedCreateInput = {
   id_comunicado?: number
-  id_profesor: string
+  id_profesor?: string | null
+  id_autor_admin?: string | null
   id_estudiante?: string | null
+  id_curso?: number | null
+  alcance: $Enums.AlcanceComunicado
   tipo: $Enums.TipoComunicado
   descripcion: string
   fecha?: Date | string
-  leido_por_padre?: boolean
-  es_grupo?: boolean
+  lecturas?: Prisma.ComunicadoLecturaUncheckedCreateNestedManyWithoutComunicadoInput
 }
 
 export type ComunicadoUpdateInput = {
+  alcance?: Prisma.EnumAlcanceComunicadoFieldUpdateOperationsInput | $Enums.AlcanceComunicado
   tipo?: Prisma.EnumTipoComunicadoFieldUpdateOperationsInput | $Enums.TipoComunicado
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  leido_por_padre?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  es_grupo?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  profesor?: Prisma.ProfesorUpdateOneRequiredWithoutComunicadosNestedInput
+  profesor?: Prisma.ProfesorUpdateOneWithoutComunicadosNestedInput
+  autor_admin?: Prisma.PersonaUpdateOneWithoutComunicados_adminNestedInput
   estudiante?: Prisma.EstudianteUpdateOneWithoutComunicadosNestedInput
+  curso?: Prisma.CursoUpdateOneWithoutComunicadosNestedInput
+  lecturas?: Prisma.ComunicadoLecturaUpdateManyWithoutComunicadoNestedInput
 }
 
 export type ComunicadoUncheckedUpdateInput = {
   id_comunicado?: Prisma.IntFieldUpdateOperationsInput | number
-  id_profesor?: Prisma.StringFieldUpdateOperationsInput | string
+  id_profesor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  id_autor_admin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id_estudiante?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  id_curso?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  alcance?: Prisma.EnumAlcanceComunicadoFieldUpdateOperationsInput | $Enums.AlcanceComunicado
   tipo?: Prisma.EnumTipoComunicadoFieldUpdateOperationsInput | $Enums.TipoComunicado
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  leido_por_padre?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  es_grupo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lecturas?: Prisma.ComunicadoLecturaUncheckedUpdateManyWithoutComunicadoNestedInput
 }
 
 export type ComunicadoCreateManyInput = {
   id_comunicado?: number
-  id_profesor: string
+  id_profesor?: string | null
+  id_autor_admin?: string | null
   id_estudiante?: string | null
+  id_curso?: number | null
+  alcance: $Enums.AlcanceComunicado
   tipo: $Enums.TipoComunicado
   descripcion: string
   fecha?: Date | string
-  leido_por_padre?: boolean
-  es_grupo?: boolean
 }
 
 export type ComunicadoUpdateManyMutationInput = {
+  alcance?: Prisma.EnumAlcanceComunicadoFieldUpdateOperationsInput | $Enums.AlcanceComunicado
   tipo?: Prisma.EnumTipoComunicadoFieldUpdateOperationsInput | $Enums.TipoComunicado
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  leido_por_padre?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  es_grupo?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ComunicadoUncheckedUpdateManyInput = {
   id_comunicado?: Prisma.IntFieldUpdateOperationsInput | number
-  id_profesor?: Prisma.StringFieldUpdateOperationsInput | string
+  id_profesor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  id_autor_admin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id_estudiante?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  id_curso?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  alcance?: Prisma.EnumAlcanceComunicadoFieldUpdateOperationsInput | $Enums.AlcanceComunicado
   tipo?: Prisma.EnumTipoComunicadoFieldUpdateOperationsInput | $Enums.TipoComunicado
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  leido_por_padre?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  es_grupo?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ComunicadoListRelationFilter = {
@@ -388,42 +422,94 @@ export type ComunicadoOrderByRelationAggregateInput = {
 export type ComunicadoCountOrderByAggregateInput = {
   id_comunicado?: Prisma.SortOrder
   id_profesor?: Prisma.SortOrder
+  id_autor_admin?: Prisma.SortOrder
   id_estudiante?: Prisma.SortOrder
+  id_curso?: Prisma.SortOrder
+  alcance?: Prisma.SortOrder
   tipo?: Prisma.SortOrder
   descripcion?: Prisma.SortOrder
   fecha?: Prisma.SortOrder
-  leido_por_padre?: Prisma.SortOrder
-  es_grupo?: Prisma.SortOrder
 }
 
 export type ComunicadoAvgOrderByAggregateInput = {
   id_comunicado?: Prisma.SortOrder
+  id_curso?: Prisma.SortOrder
 }
 
 export type ComunicadoMaxOrderByAggregateInput = {
   id_comunicado?: Prisma.SortOrder
   id_profesor?: Prisma.SortOrder
+  id_autor_admin?: Prisma.SortOrder
   id_estudiante?: Prisma.SortOrder
+  id_curso?: Prisma.SortOrder
+  alcance?: Prisma.SortOrder
   tipo?: Prisma.SortOrder
   descripcion?: Prisma.SortOrder
   fecha?: Prisma.SortOrder
-  leido_por_padre?: Prisma.SortOrder
-  es_grupo?: Prisma.SortOrder
 }
 
 export type ComunicadoMinOrderByAggregateInput = {
   id_comunicado?: Prisma.SortOrder
   id_profesor?: Prisma.SortOrder
+  id_autor_admin?: Prisma.SortOrder
   id_estudiante?: Prisma.SortOrder
+  id_curso?: Prisma.SortOrder
+  alcance?: Prisma.SortOrder
   tipo?: Prisma.SortOrder
   descripcion?: Prisma.SortOrder
   fecha?: Prisma.SortOrder
-  leido_por_padre?: Prisma.SortOrder
-  es_grupo?: Prisma.SortOrder
 }
 
 export type ComunicadoSumOrderByAggregateInput = {
   id_comunicado?: Prisma.SortOrder
+  id_curso?: Prisma.SortOrder
+}
+
+export type ComunicadoScalarRelationFilter = {
+  is?: Prisma.ComunicadoWhereInput
+  isNot?: Prisma.ComunicadoWhereInput
+}
+
+export type ComunicadoCreateNestedManyWithoutAutor_adminInput = {
+  create?: Prisma.XOR<Prisma.ComunicadoCreateWithoutAutor_adminInput, Prisma.ComunicadoUncheckedCreateWithoutAutor_adminInput> | Prisma.ComunicadoCreateWithoutAutor_adminInput[] | Prisma.ComunicadoUncheckedCreateWithoutAutor_adminInput[]
+  connectOrCreate?: Prisma.ComunicadoCreateOrConnectWithoutAutor_adminInput | Prisma.ComunicadoCreateOrConnectWithoutAutor_adminInput[]
+  createMany?: Prisma.ComunicadoCreateManyAutor_adminInputEnvelope
+  connect?: Prisma.ComunicadoWhereUniqueInput | Prisma.ComunicadoWhereUniqueInput[]
+}
+
+export type ComunicadoUncheckedCreateNestedManyWithoutAutor_adminInput = {
+  create?: Prisma.XOR<Prisma.ComunicadoCreateWithoutAutor_adminInput, Prisma.ComunicadoUncheckedCreateWithoutAutor_adminInput> | Prisma.ComunicadoCreateWithoutAutor_adminInput[] | Prisma.ComunicadoUncheckedCreateWithoutAutor_adminInput[]
+  connectOrCreate?: Prisma.ComunicadoCreateOrConnectWithoutAutor_adminInput | Prisma.ComunicadoCreateOrConnectWithoutAutor_adminInput[]
+  createMany?: Prisma.ComunicadoCreateManyAutor_adminInputEnvelope
+  connect?: Prisma.ComunicadoWhereUniqueInput | Prisma.ComunicadoWhereUniqueInput[]
+}
+
+export type ComunicadoUpdateManyWithoutAutor_adminNestedInput = {
+  create?: Prisma.XOR<Prisma.ComunicadoCreateWithoutAutor_adminInput, Prisma.ComunicadoUncheckedCreateWithoutAutor_adminInput> | Prisma.ComunicadoCreateWithoutAutor_adminInput[] | Prisma.ComunicadoUncheckedCreateWithoutAutor_adminInput[]
+  connectOrCreate?: Prisma.ComunicadoCreateOrConnectWithoutAutor_adminInput | Prisma.ComunicadoCreateOrConnectWithoutAutor_adminInput[]
+  upsert?: Prisma.ComunicadoUpsertWithWhereUniqueWithoutAutor_adminInput | Prisma.ComunicadoUpsertWithWhereUniqueWithoutAutor_adminInput[]
+  createMany?: Prisma.ComunicadoCreateManyAutor_adminInputEnvelope
+  set?: Prisma.ComunicadoWhereUniqueInput | Prisma.ComunicadoWhereUniqueInput[]
+  disconnect?: Prisma.ComunicadoWhereUniqueInput | Prisma.ComunicadoWhereUniqueInput[]
+  delete?: Prisma.ComunicadoWhereUniqueInput | Prisma.ComunicadoWhereUniqueInput[]
+  connect?: Prisma.ComunicadoWhereUniqueInput | Prisma.ComunicadoWhereUniqueInput[]
+  update?: Prisma.ComunicadoUpdateWithWhereUniqueWithoutAutor_adminInput | Prisma.ComunicadoUpdateWithWhereUniqueWithoutAutor_adminInput[]
+  updateMany?: Prisma.ComunicadoUpdateManyWithWhereWithoutAutor_adminInput | Prisma.ComunicadoUpdateManyWithWhereWithoutAutor_adminInput[]
+  deleteMany?: Prisma.ComunicadoScalarWhereInput | Prisma.ComunicadoScalarWhereInput[]
+}
+
+export type ComunicadoUncheckedUpdateManyWithoutAutor_adminNestedInput = {
+  create?: Prisma.XOR<Prisma.ComunicadoCreateWithoutAutor_adminInput, Prisma.ComunicadoUncheckedCreateWithoutAutor_adminInput> | Prisma.ComunicadoCreateWithoutAutor_adminInput[] | Prisma.ComunicadoUncheckedCreateWithoutAutor_adminInput[]
+  connectOrCreate?: Prisma.ComunicadoCreateOrConnectWithoutAutor_adminInput | Prisma.ComunicadoCreateOrConnectWithoutAutor_adminInput[]
+  upsert?: Prisma.ComunicadoUpsertWithWhereUniqueWithoutAutor_adminInput | Prisma.ComunicadoUpsertWithWhereUniqueWithoutAutor_adminInput[]
+  createMany?: Prisma.ComunicadoCreateManyAutor_adminInputEnvelope
+  set?: Prisma.ComunicadoWhereUniqueInput | Prisma.ComunicadoWhereUniqueInput[]
+  disconnect?: Prisma.ComunicadoWhereUniqueInput | Prisma.ComunicadoWhereUniqueInput[]
+  delete?: Prisma.ComunicadoWhereUniqueInput | Prisma.ComunicadoWhereUniqueInput[]
+  connect?: Prisma.ComunicadoWhereUniqueInput | Prisma.ComunicadoWhereUniqueInput[]
+  update?: Prisma.ComunicadoUpdateWithWhereUniqueWithoutAutor_adminInput | Prisma.ComunicadoUpdateWithWhereUniqueWithoutAutor_adminInput[]
+  updateMany?: Prisma.ComunicadoUpdateManyWithWhereWithoutAutor_adminInput | Prisma.ComunicadoUpdateManyWithWhereWithoutAutor_adminInput[]
+  deleteMany?: Prisma.ComunicadoScalarWhereInput | Prisma.ComunicadoScalarWhereInput[]
 }
 
 export type ComunicadoCreateNestedManyWithoutEstudianteInput = {
@@ -510,27 +596,163 @@ export type ComunicadoUncheckedUpdateManyWithoutProfesorNestedInput = {
   deleteMany?: Prisma.ComunicadoScalarWhereInput | Prisma.ComunicadoScalarWhereInput[]
 }
 
+export type ComunicadoCreateNestedManyWithoutCursoInput = {
+  create?: Prisma.XOR<Prisma.ComunicadoCreateWithoutCursoInput, Prisma.ComunicadoUncheckedCreateWithoutCursoInput> | Prisma.ComunicadoCreateWithoutCursoInput[] | Prisma.ComunicadoUncheckedCreateWithoutCursoInput[]
+  connectOrCreate?: Prisma.ComunicadoCreateOrConnectWithoutCursoInput | Prisma.ComunicadoCreateOrConnectWithoutCursoInput[]
+  createMany?: Prisma.ComunicadoCreateManyCursoInputEnvelope
+  connect?: Prisma.ComunicadoWhereUniqueInput | Prisma.ComunicadoWhereUniqueInput[]
+}
+
+export type ComunicadoUncheckedCreateNestedManyWithoutCursoInput = {
+  create?: Prisma.XOR<Prisma.ComunicadoCreateWithoutCursoInput, Prisma.ComunicadoUncheckedCreateWithoutCursoInput> | Prisma.ComunicadoCreateWithoutCursoInput[] | Prisma.ComunicadoUncheckedCreateWithoutCursoInput[]
+  connectOrCreate?: Prisma.ComunicadoCreateOrConnectWithoutCursoInput | Prisma.ComunicadoCreateOrConnectWithoutCursoInput[]
+  createMany?: Prisma.ComunicadoCreateManyCursoInputEnvelope
+  connect?: Prisma.ComunicadoWhereUniqueInput | Prisma.ComunicadoWhereUniqueInput[]
+}
+
+export type ComunicadoUpdateManyWithoutCursoNestedInput = {
+  create?: Prisma.XOR<Prisma.ComunicadoCreateWithoutCursoInput, Prisma.ComunicadoUncheckedCreateWithoutCursoInput> | Prisma.ComunicadoCreateWithoutCursoInput[] | Prisma.ComunicadoUncheckedCreateWithoutCursoInput[]
+  connectOrCreate?: Prisma.ComunicadoCreateOrConnectWithoutCursoInput | Prisma.ComunicadoCreateOrConnectWithoutCursoInput[]
+  upsert?: Prisma.ComunicadoUpsertWithWhereUniqueWithoutCursoInput | Prisma.ComunicadoUpsertWithWhereUniqueWithoutCursoInput[]
+  createMany?: Prisma.ComunicadoCreateManyCursoInputEnvelope
+  set?: Prisma.ComunicadoWhereUniqueInput | Prisma.ComunicadoWhereUniqueInput[]
+  disconnect?: Prisma.ComunicadoWhereUniqueInput | Prisma.ComunicadoWhereUniqueInput[]
+  delete?: Prisma.ComunicadoWhereUniqueInput | Prisma.ComunicadoWhereUniqueInput[]
+  connect?: Prisma.ComunicadoWhereUniqueInput | Prisma.ComunicadoWhereUniqueInput[]
+  update?: Prisma.ComunicadoUpdateWithWhereUniqueWithoutCursoInput | Prisma.ComunicadoUpdateWithWhereUniqueWithoutCursoInput[]
+  updateMany?: Prisma.ComunicadoUpdateManyWithWhereWithoutCursoInput | Prisma.ComunicadoUpdateManyWithWhereWithoutCursoInput[]
+  deleteMany?: Prisma.ComunicadoScalarWhereInput | Prisma.ComunicadoScalarWhereInput[]
+}
+
+export type ComunicadoUncheckedUpdateManyWithoutCursoNestedInput = {
+  create?: Prisma.XOR<Prisma.ComunicadoCreateWithoutCursoInput, Prisma.ComunicadoUncheckedCreateWithoutCursoInput> | Prisma.ComunicadoCreateWithoutCursoInput[] | Prisma.ComunicadoUncheckedCreateWithoutCursoInput[]
+  connectOrCreate?: Prisma.ComunicadoCreateOrConnectWithoutCursoInput | Prisma.ComunicadoCreateOrConnectWithoutCursoInput[]
+  upsert?: Prisma.ComunicadoUpsertWithWhereUniqueWithoutCursoInput | Prisma.ComunicadoUpsertWithWhereUniqueWithoutCursoInput[]
+  createMany?: Prisma.ComunicadoCreateManyCursoInputEnvelope
+  set?: Prisma.ComunicadoWhereUniqueInput | Prisma.ComunicadoWhereUniqueInput[]
+  disconnect?: Prisma.ComunicadoWhereUniqueInput | Prisma.ComunicadoWhereUniqueInput[]
+  delete?: Prisma.ComunicadoWhereUniqueInput | Prisma.ComunicadoWhereUniqueInput[]
+  connect?: Prisma.ComunicadoWhereUniqueInput | Prisma.ComunicadoWhereUniqueInput[]
+  update?: Prisma.ComunicadoUpdateWithWhereUniqueWithoutCursoInput | Prisma.ComunicadoUpdateWithWhereUniqueWithoutCursoInput[]
+  updateMany?: Prisma.ComunicadoUpdateManyWithWhereWithoutCursoInput | Prisma.ComunicadoUpdateManyWithWhereWithoutCursoInput[]
+  deleteMany?: Prisma.ComunicadoScalarWhereInput | Prisma.ComunicadoScalarWhereInput[]
+}
+
+export type EnumAlcanceComunicadoFieldUpdateOperationsInput = {
+  set?: $Enums.AlcanceComunicado
+}
+
 export type EnumTipoComunicadoFieldUpdateOperationsInput = {
   set?: $Enums.TipoComunicado
 }
 
-export type ComunicadoCreateWithoutEstudianteInput = {
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type ComunicadoCreateNestedOneWithoutLecturasInput = {
+  create?: Prisma.XOR<Prisma.ComunicadoCreateWithoutLecturasInput, Prisma.ComunicadoUncheckedCreateWithoutLecturasInput>
+  connectOrCreate?: Prisma.ComunicadoCreateOrConnectWithoutLecturasInput
+  connect?: Prisma.ComunicadoWhereUniqueInput
+}
+
+export type ComunicadoUpdateOneRequiredWithoutLecturasNestedInput = {
+  create?: Prisma.XOR<Prisma.ComunicadoCreateWithoutLecturasInput, Prisma.ComunicadoUncheckedCreateWithoutLecturasInput>
+  connectOrCreate?: Prisma.ComunicadoCreateOrConnectWithoutLecturasInput
+  upsert?: Prisma.ComunicadoUpsertWithoutLecturasInput
+  connect?: Prisma.ComunicadoWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ComunicadoUpdateToOneWithWhereWithoutLecturasInput, Prisma.ComunicadoUpdateWithoutLecturasInput>, Prisma.ComunicadoUncheckedUpdateWithoutLecturasInput>
+}
+
+export type ComunicadoCreateWithoutAutor_adminInput = {
+  alcance: $Enums.AlcanceComunicado
   tipo: $Enums.TipoComunicado
   descripcion: string
   fecha?: Date | string
-  leido_por_padre?: boolean
-  es_grupo?: boolean
-  profesor: Prisma.ProfesorCreateNestedOneWithoutComunicadosInput
+  profesor?: Prisma.ProfesorCreateNestedOneWithoutComunicadosInput
+  estudiante?: Prisma.EstudianteCreateNestedOneWithoutComunicadosInput
+  curso?: Prisma.CursoCreateNestedOneWithoutComunicadosInput
+  lecturas?: Prisma.ComunicadoLecturaCreateNestedManyWithoutComunicadoInput
+}
+
+export type ComunicadoUncheckedCreateWithoutAutor_adminInput = {
+  id_comunicado?: number
+  id_profesor?: string | null
+  id_estudiante?: string | null
+  id_curso?: number | null
+  alcance: $Enums.AlcanceComunicado
+  tipo: $Enums.TipoComunicado
+  descripcion: string
+  fecha?: Date | string
+  lecturas?: Prisma.ComunicadoLecturaUncheckedCreateNestedManyWithoutComunicadoInput
+}
+
+export type ComunicadoCreateOrConnectWithoutAutor_adminInput = {
+  where: Prisma.ComunicadoWhereUniqueInput
+  create: Prisma.XOR<Prisma.ComunicadoCreateWithoutAutor_adminInput, Prisma.ComunicadoUncheckedCreateWithoutAutor_adminInput>
+}
+
+export type ComunicadoCreateManyAutor_adminInputEnvelope = {
+  data: Prisma.ComunicadoCreateManyAutor_adminInput | Prisma.ComunicadoCreateManyAutor_adminInput[]
+  skipDuplicates?: boolean
+}
+
+export type ComunicadoUpsertWithWhereUniqueWithoutAutor_adminInput = {
+  where: Prisma.ComunicadoWhereUniqueInput
+  update: Prisma.XOR<Prisma.ComunicadoUpdateWithoutAutor_adminInput, Prisma.ComunicadoUncheckedUpdateWithoutAutor_adminInput>
+  create: Prisma.XOR<Prisma.ComunicadoCreateWithoutAutor_adminInput, Prisma.ComunicadoUncheckedCreateWithoutAutor_adminInput>
+}
+
+export type ComunicadoUpdateWithWhereUniqueWithoutAutor_adminInput = {
+  where: Prisma.ComunicadoWhereUniqueInput
+  data: Prisma.XOR<Prisma.ComunicadoUpdateWithoutAutor_adminInput, Prisma.ComunicadoUncheckedUpdateWithoutAutor_adminInput>
+}
+
+export type ComunicadoUpdateManyWithWhereWithoutAutor_adminInput = {
+  where: Prisma.ComunicadoScalarWhereInput
+  data: Prisma.XOR<Prisma.ComunicadoUpdateManyMutationInput, Prisma.ComunicadoUncheckedUpdateManyWithoutAutor_adminInput>
+}
+
+export type ComunicadoScalarWhereInput = {
+  AND?: Prisma.ComunicadoScalarWhereInput | Prisma.ComunicadoScalarWhereInput[]
+  OR?: Prisma.ComunicadoScalarWhereInput[]
+  NOT?: Prisma.ComunicadoScalarWhereInput | Prisma.ComunicadoScalarWhereInput[]
+  id_comunicado?: Prisma.IntFilter<"Comunicado"> | number
+  id_profesor?: Prisma.StringNullableFilter<"Comunicado"> | string | null
+  id_autor_admin?: Prisma.StringNullableFilter<"Comunicado"> | string | null
+  id_estudiante?: Prisma.StringNullableFilter<"Comunicado"> | string | null
+  id_curso?: Prisma.IntNullableFilter<"Comunicado"> | number | null
+  alcance?: Prisma.EnumAlcanceComunicadoFilter<"Comunicado"> | $Enums.AlcanceComunicado
+  tipo?: Prisma.EnumTipoComunicadoFilter<"Comunicado"> | $Enums.TipoComunicado
+  descripcion?: Prisma.StringFilter<"Comunicado"> | string
+  fecha?: Prisma.DateTimeFilter<"Comunicado"> | Date | string
+}
+
+export type ComunicadoCreateWithoutEstudianteInput = {
+  alcance: $Enums.AlcanceComunicado
+  tipo: $Enums.TipoComunicado
+  descripcion: string
+  fecha?: Date | string
+  profesor?: Prisma.ProfesorCreateNestedOneWithoutComunicadosInput
+  autor_admin?: Prisma.PersonaCreateNestedOneWithoutComunicados_adminInput
+  curso?: Prisma.CursoCreateNestedOneWithoutComunicadosInput
+  lecturas?: Prisma.ComunicadoLecturaCreateNestedManyWithoutComunicadoInput
 }
 
 export type ComunicadoUncheckedCreateWithoutEstudianteInput = {
   id_comunicado?: number
-  id_profesor: string
+  id_profesor?: string | null
+  id_autor_admin?: string | null
+  id_curso?: number | null
+  alcance: $Enums.AlcanceComunicado
   tipo: $Enums.TipoComunicado
   descripcion: string
   fecha?: Date | string
-  leido_por_padre?: boolean
-  es_grupo?: boolean
+  lecturas?: Prisma.ComunicadoLecturaUncheckedCreateNestedManyWithoutComunicadoInput
 }
 
 export type ComunicadoCreateOrConnectWithoutEstudianteInput = {
@@ -559,37 +781,27 @@ export type ComunicadoUpdateManyWithWhereWithoutEstudianteInput = {
   data: Prisma.XOR<Prisma.ComunicadoUpdateManyMutationInput, Prisma.ComunicadoUncheckedUpdateManyWithoutEstudianteInput>
 }
 
-export type ComunicadoScalarWhereInput = {
-  AND?: Prisma.ComunicadoScalarWhereInput | Prisma.ComunicadoScalarWhereInput[]
-  OR?: Prisma.ComunicadoScalarWhereInput[]
-  NOT?: Prisma.ComunicadoScalarWhereInput | Prisma.ComunicadoScalarWhereInput[]
-  id_comunicado?: Prisma.IntFilter<"Comunicado"> | number
-  id_profesor?: Prisma.StringFilter<"Comunicado"> | string
-  id_estudiante?: Prisma.StringNullableFilter<"Comunicado"> | string | null
-  tipo?: Prisma.EnumTipoComunicadoFilter<"Comunicado"> | $Enums.TipoComunicado
-  descripcion?: Prisma.StringFilter<"Comunicado"> | string
-  fecha?: Prisma.DateTimeFilter<"Comunicado"> | Date | string
-  leido_por_padre?: Prisma.BoolFilter<"Comunicado"> | boolean
-  es_grupo?: Prisma.BoolFilter<"Comunicado"> | boolean
-}
-
 export type ComunicadoCreateWithoutProfesorInput = {
+  alcance: $Enums.AlcanceComunicado
   tipo: $Enums.TipoComunicado
   descripcion: string
   fecha?: Date | string
-  leido_por_padre?: boolean
-  es_grupo?: boolean
+  autor_admin?: Prisma.PersonaCreateNestedOneWithoutComunicados_adminInput
   estudiante?: Prisma.EstudianteCreateNestedOneWithoutComunicadosInput
+  curso?: Prisma.CursoCreateNestedOneWithoutComunicadosInput
+  lecturas?: Prisma.ComunicadoLecturaCreateNestedManyWithoutComunicadoInput
 }
 
 export type ComunicadoUncheckedCreateWithoutProfesorInput = {
   id_comunicado?: number
+  id_autor_admin?: string | null
   id_estudiante?: string | null
+  id_curso?: number | null
+  alcance: $Enums.AlcanceComunicado
   tipo: $Enums.TipoComunicado
   descripcion: string
   fecha?: Date | string
-  leido_por_padre?: boolean
-  es_grupo?: boolean
+  lecturas?: Prisma.ComunicadoLecturaUncheckedCreateNestedManyWithoutComunicadoInput
 }
 
 export type ComunicadoCreateOrConnectWithoutProfesorInput = {
@@ -618,165 +830,431 @@ export type ComunicadoUpdateManyWithWhereWithoutProfesorInput = {
   data: Prisma.XOR<Prisma.ComunicadoUpdateManyMutationInput, Prisma.ComunicadoUncheckedUpdateManyWithoutProfesorInput>
 }
 
-export type ComunicadoCreateManyEstudianteInput = {
-  id_comunicado?: number
-  id_profesor: string
+export type ComunicadoCreateWithoutCursoInput = {
+  alcance: $Enums.AlcanceComunicado
   tipo: $Enums.TipoComunicado
   descripcion: string
   fecha?: Date | string
-  leido_por_padre?: boolean
-  es_grupo?: boolean
+  profesor?: Prisma.ProfesorCreateNestedOneWithoutComunicadosInput
+  autor_admin?: Prisma.PersonaCreateNestedOneWithoutComunicados_adminInput
+  estudiante?: Prisma.EstudianteCreateNestedOneWithoutComunicadosInput
+  lecturas?: Prisma.ComunicadoLecturaCreateNestedManyWithoutComunicadoInput
 }
 
-export type ComunicadoUpdateWithoutEstudianteInput = {
+export type ComunicadoUncheckedCreateWithoutCursoInput = {
+  id_comunicado?: number
+  id_profesor?: string | null
+  id_autor_admin?: string | null
+  id_estudiante?: string | null
+  alcance: $Enums.AlcanceComunicado
+  tipo: $Enums.TipoComunicado
+  descripcion: string
+  fecha?: Date | string
+  lecturas?: Prisma.ComunicadoLecturaUncheckedCreateNestedManyWithoutComunicadoInput
+}
+
+export type ComunicadoCreateOrConnectWithoutCursoInput = {
+  where: Prisma.ComunicadoWhereUniqueInput
+  create: Prisma.XOR<Prisma.ComunicadoCreateWithoutCursoInput, Prisma.ComunicadoUncheckedCreateWithoutCursoInput>
+}
+
+export type ComunicadoCreateManyCursoInputEnvelope = {
+  data: Prisma.ComunicadoCreateManyCursoInput | Prisma.ComunicadoCreateManyCursoInput[]
+  skipDuplicates?: boolean
+}
+
+export type ComunicadoUpsertWithWhereUniqueWithoutCursoInput = {
+  where: Prisma.ComunicadoWhereUniqueInput
+  update: Prisma.XOR<Prisma.ComunicadoUpdateWithoutCursoInput, Prisma.ComunicadoUncheckedUpdateWithoutCursoInput>
+  create: Prisma.XOR<Prisma.ComunicadoCreateWithoutCursoInput, Prisma.ComunicadoUncheckedCreateWithoutCursoInput>
+}
+
+export type ComunicadoUpdateWithWhereUniqueWithoutCursoInput = {
+  where: Prisma.ComunicadoWhereUniqueInput
+  data: Prisma.XOR<Prisma.ComunicadoUpdateWithoutCursoInput, Prisma.ComunicadoUncheckedUpdateWithoutCursoInput>
+}
+
+export type ComunicadoUpdateManyWithWhereWithoutCursoInput = {
+  where: Prisma.ComunicadoScalarWhereInput
+  data: Prisma.XOR<Prisma.ComunicadoUpdateManyMutationInput, Prisma.ComunicadoUncheckedUpdateManyWithoutCursoInput>
+}
+
+export type ComunicadoCreateWithoutLecturasInput = {
+  alcance: $Enums.AlcanceComunicado
+  tipo: $Enums.TipoComunicado
+  descripcion: string
+  fecha?: Date | string
+  profesor?: Prisma.ProfesorCreateNestedOneWithoutComunicadosInput
+  autor_admin?: Prisma.PersonaCreateNestedOneWithoutComunicados_adminInput
+  estudiante?: Prisma.EstudianteCreateNestedOneWithoutComunicadosInput
+  curso?: Prisma.CursoCreateNestedOneWithoutComunicadosInput
+}
+
+export type ComunicadoUncheckedCreateWithoutLecturasInput = {
+  id_comunicado?: number
+  id_profesor?: string | null
+  id_autor_admin?: string | null
+  id_estudiante?: string | null
+  id_curso?: number | null
+  alcance: $Enums.AlcanceComunicado
+  tipo: $Enums.TipoComunicado
+  descripcion: string
+  fecha?: Date | string
+}
+
+export type ComunicadoCreateOrConnectWithoutLecturasInput = {
+  where: Prisma.ComunicadoWhereUniqueInput
+  create: Prisma.XOR<Prisma.ComunicadoCreateWithoutLecturasInput, Prisma.ComunicadoUncheckedCreateWithoutLecturasInput>
+}
+
+export type ComunicadoUpsertWithoutLecturasInput = {
+  update: Prisma.XOR<Prisma.ComunicadoUpdateWithoutLecturasInput, Prisma.ComunicadoUncheckedUpdateWithoutLecturasInput>
+  create: Prisma.XOR<Prisma.ComunicadoCreateWithoutLecturasInput, Prisma.ComunicadoUncheckedCreateWithoutLecturasInput>
+  where?: Prisma.ComunicadoWhereInput
+}
+
+export type ComunicadoUpdateToOneWithWhereWithoutLecturasInput = {
+  where?: Prisma.ComunicadoWhereInput
+  data: Prisma.XOR<Prisma.ComunicadoUpdateWithoutLecturasInput, Prisma.ComunicadoUncheckedUpdateWithoutLecturasInput>
+}
+
+export type ComunicadoUpdateWithoutLecturasInput = {
+  alcance?: Prisma.EnumAlcanceComunicadoFieldUpdateOperationsInput | $Enums.AlcanceComunicado
   tipo?: Prisma.EnumTipoComunicadoFieldUpdateOperationsInput | $Enums.TipoComunicado
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  leido_por_padre?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  es_grupo?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  profesor?: Prisma.ProfesorUpdateOneRequiredWithoutComunicadosNestedInput
+  profesor?: Prisma.ProfesorUpdateOneWithoutComunicadosNestedInput
+  autor_admin?: Prisma.PersonaUpdateOneWithoutComunicados_adminNestedInput
+  estudiante?: Prisma.EstudianteUpdateOneWithoutComunicadosNestedInput
+  curso?: Prisma.CursoUpdateOneWithoutComunicadosNestedInput
+}
+
+export type ComunicadoUncheckedUpdateWithoutLecturasInput = {
+  id_comunicado?: Prisma.IntFieldUpdateOperationsInput | number
+  id_profesor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  id_autor_admin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  id_estudiante?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  id_curso?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  alcance?: Prisma.EnumAlcanceComunicadoFieldUpdateOperationsInput | $Enums.AlcanceComunicado
+  tipo?: Prisma.EnumTipoComunicadoFieldUpdateOperationsInput | $Enums.TipoComunicado
+  descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ComunicadoCreateManyAutor_adminInput = {
+  id_comunicado?: number
+  id_profesor?: string | null
+  id_estudiante?: string | null
+  id_curso?: number | null
+  alcance: $Enums.AlcanceComunicado
+  tipo: $Enums.TipoComunicado
+  descripcion: string
+  fecha?: Date | string
+}
+
+export type ComunicadoUpdateWithoutAutor_adminInput = {
+  alcance?: Prisma.EnumAlcanceComunicadoFieldUpdateOperationsInput | $Enums.AlcanceComunicado
+  tipo?: Prisma.EnumTipoComunicadoFieldUpdateOperationsInput | $Enums.TipoComunicado
+  descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  profesor?: Prisma.ProfesorUpdateOneWithoutComunicadosNestedInput
+  estudiante?: Prisma.EstudianteUpdateOneWithoutComunicadosNestedInput
+  curso?: Prisma.CursoUpdateOneWithoutComunicadosNestedInput
+  lecturas?: Prisma.ComunicadoLecturaUpdateManyWithoutComunicadoNestedInput
+}
+
+export type ComunicadoUncheckedUpdateWithoutAutor_adminInput = {
+  id_comunicado?: Prisma.IntFieldUpdateOperationsInput | number
+  id_profesor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  id_estudiante?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  id_curso?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  alcance?: Prisma.EnumAlcanceComunicadoFieldUpdateOperationsInput | $Enums.AlcanceComunicado
+  tipo?: Prisma.EnumTipoComunicadoFieldUpdateOperationsInput | $Enums.TipoComunicado
+  descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lecturas?: Prisma.ComunicadoLecturaUncheckedUpdateManyWithoutComunicadoNestedInput
+}
+
+export type ComunicadoUncheckedUpdateManyWithoutAutor_adminInput = {
+  id_comunicado?: Prisma.IntFieldUpdateOperationsInput | number
+  id_profesor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  id_estudiante?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  id_curso?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  alcance?: Prisma.EnumAlcanceComunicadoFieldUpdateOperationsInput | $Enums.AlcanceComunicado
+  tipo?: Prisma.EnumTipoComunicadoFieldUpdateOperationsInput | $Enums.TipoComunicado
+  descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ComunicadoCreateManyEstudianteInput = {
+  id_comunicado?: number
+  id_profesor?: string | null
+  id_autor_admin?: string | null
+  id_curso?: number | null
+  alcance: $Enums.AlcanceComunicado
+  tipo: $Enums.TipoComunicado
+  descripcion: string
+  fecha?: Date | string
+}
+
+export type ComunicadoUpdateWithoutEstudianteInput = {
+  alcance?: Prisma.EnumAlcanceComunicadoFieldUpdateOperationsInput | $Enums.AlcanceComunicado
+  tipo?: Prisma.EnumTipoComunicadoFieldUpdateOperationsInput | $Enums.TipoComunicado
+  descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  profesor?: Prisma.ProfesorUpdateOneWithoutComunicadosNestedInput
+  autor_admin?: Prisma.PersonaUpdateOneWithoutComunicados_adminNestedInput
+  curso?: Prisma.CursoUpdateOneWithoutComunicadosNestedInput
+  lecturas?: Prisma.ComunicadoLecturaUpdateManyWithoutComunicadoNestedInput
 }
 
 export type ComunicadoUncheckedUpdateWithoutEstudianteInput = {
   id_comunicado?: Prisma.IntFieldUpdateOperationsInput | number
-  id_profesor?: Prisma.StringFieldUpdateOperationsInput | string
+  id_profesor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  id_autor_admin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  id_curso?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  alcance?: Prisma.EnumAlcanceComunicadoFieldUpdateOperationsInput | $Enums.AlcanceComunicado
   tipo?: Prisma.EnumTipoComunicadoFieldUpdateOperationsInput | $Enums.TipoComunicado
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  leido_por_padre?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  es_grupo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lecturas?: Prisma.ComunicadoLecturaUncheckedUpdateManyWithoutComunicadoNestedInput
 }
 
 export type ComunicadoUncheckedUpdateManyWithoutEstudianteInput = {
   id_comunicado?: Prisma.IntFieldUpdateOperationsInput | number
-  id_profesor?: Prisma.StringFieldUpdateOperationsInput | string
+  id_profesor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  id_autor_admin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  id_curso?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  alcance?: Prisma.EnumAlcanceComunicadoFieldUpdateOperationsInput | $Enums.AlcanceComunicado
   tipo?: Prisma.EnumTipoComunicadoFieldUpdateOperationsInput | $Enums.TipoComunicado
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  leido_por_padre?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  es_grupo?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ComunicadoCreateManyProfesorInput = {
   id_comunicado?: number
+  id_autor_admin?: string | null
   id_estudiante?: string | null
+  id_curso?: number | null
+  alcance: $Enums.AlcanceComunicado
   tipo: $Enums.TipoComunicado
   descripcion: string
   fecha?: Date | string
-  leido_por_padre?: boolean
-  es_grupo?: boolean
 }
 
 export type ComunicadoUpdateWithoutProfesorInput = {
+  alcance?: Prisma.EnumAlcanceComunicadoFieldUpdateOperationsInput | $Enums.AlcanceComunicado
   tipo?: Prisma.EnumTipoComunicadoFieldUpdateOperationsInput | $Enums.TipoComunicado
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  leido_por_padre?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  es_grupo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  autor_admin?: Prisma.PersonaUpdateOneWithoutComunicados_adminNestedInput
   estudiante?: Prisma.EstudianteUpdateOneWithoutComunicadosNestedInput
+  curso?: Prisma.CursoUpdateOneWithoutComunicadosNestedInput
+  lecturas?: Prisma.ComunicadoLecturaUpdateManyWithoutComunicadoNestedInput
 }
 
 export type ComunicadoUncheckedUpdateWithoutProfesorInput = {
   id_comunicado?: Prisma.IntFieldUpdateOperationsInput | number
+  id_autor_admin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id_estudiante?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  id_curso?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  alcance?: Prisma.EnumAlcanceComunicadoFieldUpdateOperationsInput | $Enums.AlcanceComunicado
   tipo?: Prisma.EnumTipoComunicadoFieldUpdateOperationsInput | $Enums.TipoComunicado
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  leido_por_padre?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  es_grupo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lecturas?: Prisma.ComunicadoLecturaUncheckedUpdateManyWithoutComunicadoNestedInput
 }
 
 export type ComunicadoUncheckedUpdateManyWithoutProfesorInput = {
   id_comunicado?: Prisma.IntFieldUpdateOperationsInput | number
+  id_autor_admin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id_estudiante?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  id_curso?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  alcance?: Prisma.EnumAlcanceComunicadoFieldUpdateOperationsInput | $Enums.AlcanceComunicado
   tipo?: Prisma.EnumTipoComunicadoFieldUpdateOperationsInput | $Enums.TipoComunicado
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  leido_por_padre?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  es_grupo?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
+export type ComunicadoCreateManyCursoInput = {
+  id_comunicado?: number
+  id_profesor?: string | null
+  id_autor_admin?: string | null
+  id_estudiante?: string | null
+  alcance: $Enums.AlcanceComunicado
+  tipo: $Enums.TipoComunicado
+  descripcion: string
+  fecha?: Date | string
+}
+
+export type ComunicadoUpdateWithoutCursoInput = {
+  alcance?: Prisma.EnumAlcanceComunicadoFieldUpdateOperationsInput | $Enums.AlcanceComunicado
+  tipo?: Prisma.EnumTipoComunicadoFieldUpdateOperationsInput | $Enums.TipoComunicado
+  descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  profesor?: Prisma.ProfesorUpdateOneWithoutComunicadosNestedInput
+  autor_admin?: Prisma.PersonaUpdateOneWithoutComunicados_adminNestedInput
+  estudiante?: Prisma.EstudianteUpdateOneWithoutComunicadosNestedInput
+  lecturas?: Prisma.ComunicadoLecturaUpdateManyWithoutComunicadoNestedInput
+}
+
+export type ComunicadoUncheckedUpdateWithoutCursoInput = {
+  id_comunicado?: Prisma.IntFieldUpdateOperationsInput | number
+  id_profesor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  id_autor_admin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  id_estudiante?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  alcance?: Prisma.EnumAlcanceComunicadoFieldUpdateOperationsInput | $Enums.AlcanceComunicado
+  tipo?: Prisma.EnumTipoComunicadoFieldUpdateOperationsInput | $Enums.TipoComunicado
+  descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lecturas?: Prisma.ComunicadoLecturaUncheckedUpdateManyWithoutComunicadoNestedInput
+}
+
+export type ComunicadoUncheckedUpdateManyWithoutCursoInput = {
+  id_comunicado?: Prisma.IntFieldUpdateOperationsInput | number
+  id_profesor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  id_autor_admin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  id_estudiante?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  alcance?: Prisma.EnumAlcanceComunicadoFieldUpdateOperationsInput | $Enums.AlcanceComunicado
+  tipo?: Prisma.EnumTipoComunicadoFieldUpdateOperationsInput | $Enums.TipoComunicado
+  descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+
+/**
+ * Count Type ComunicadoCountOutputType
+ */
+
+export type ComunicadoCountOutputType = {
+  lecturas: number
+}
+
+export type ComunicadoCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  lecturas?: boolean | ComunicadoCountOutputTypeCountLecturasArgs
+}
+
+/**
+ * ComunicadoCountOutputType without action
+ */
+export type ComunicadoCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ComunicadoCountOutputType
+   */
+  select?: Prisma.ComunicadoCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ComunicadoCountOutputType without action
+ */
+export type ComunicadoCountOutputTypeCountLecturasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ComunicadoLecturaWhereInput
+}
 
 
 export type ComunicadoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id_comunicado?: boolean
   id_profesor?: boolean
+  id_autor_admin?: boolean
   id_estudiante?: boolean
+  id_curso?: boolean
+  alcance?: boolean
   tipo?: boolean
   descripcion?: boolean
   fecha?: boolean
-  leido_por_padre?: boolean
-  es_grupo?: boolean
-  profesor?: boolean | Prisma.ProfesorDefaultArgs<ExtArgs>
+  profesor?: boolean | Prisma.Comunicado$profesorArgs<ExtArgs>
+  autor_admin?: boolean | Prisma.Comunicado$autor_adminArgs<ExtArgs>
   estudiante?: boolean | Prisma.Comunicado$estudianteArgs<ExtArgs>
+  curso?: boolean | Prisma.Comunicado$cursoArgs<ExtArgs>
+  lecturas?: boolean | Prisma.Comunicado$lecturasArgs<ExtArgs>
+  _count?: boolean | Prisma.ComunicadoCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["comunicado"]>
 
 export type ComunicadoSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id_comunicado?: boolean
   id_profesor?: boolean
+  id_autor_admin?: boolean
   id_estudiante?: boolean
+  id_curso?: boolean
+  alcance?: boolean
   tipo?: boolean
   descripcion?: boolean
   fecha?: boolean
-  leido_por_padre?: boolean
-  es_grupo?: boolean
-  profesor?: boolean | Prisma.ProfesorDefaultArgs<ExtArgs>
+  profesor?: boolean | Prisma.Comunicado$profesorArgs<ExtArgs>
+  autor_admin?: boolean | Prisma.Comunicado$autor_adminArgs<ExtArgs>
   estudiante?: boolean | Prisma.Comunicado$estudianteArgs<ExtArgs>
+  curso?: boolean | Prisma.Comunicado$cursoArgs<ExtArgs>
 }, ExtArgs["result"]["comunicado"]>
 
 export type ComunicadoSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id_comunicado?: boolean
   id_profesor?: boolean
+  id_autor_admin?: boolean
   id_estudiante?: boolean
+  id_curso?: boolean
+  alcance?: boolean
   tipo?: boolean
   descripcion?: boolean
   fecha?: boolean
-  leido_por_padre?: boolean
-  es_grupo?: boolean
-  profesor?: boolean | Prisma.ProfesorDefaultArgs<ExtArgs>
+  profesor?: boolean | Prisma.Comunicado$profesorArgs<ExtArgs>
+  autor_admin?: boolean | Prisma.Comunicado$autor_adminArgs<ExtArgs>
   estudiante?: boolean | Prisma.Comunicado$estudianteArgs<ExtArgs>
+  curso?: boolean | Prisma.Comunicado$cursoArgs<ExtArgs>
 }, ExtArgs["result"]["comunicado"]>
 
 export type ComunicadoSelectScalar = {
   id_comunicado?: boolean
   id_profesor?: boolean
+  id_autor_admin?: boolean
   id_estudiante?: boolean
+  id_curso?: boolean
+  alcance?: boolean
   tipo?: boolean
   descripcion?: boolean
   fecha?: boolean
-  leido_por_padre?: boolean
-  es_grupo?: boolean
 }
 
-export type ComunicadoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id_comunicado" | "id_profesor" | "id_estudiante" | "tipo" | "descripcion" | "fecha" | "leido_por_padre" | "es_grupo", ExtArgs["result"]["comunicado"]>
+export type ComunicadoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id_comunicado" | "id_profesor" | "id_autor_admin" | "id_estudiante" | "id_curso" | "alcance" | "tipo" | "descripcion" | "fecha", ExtArgs["result"]["comunicado"]>
 export type ComunicadoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  profesor?: boolean | Prisma.ProfesorDefaultArgs<ExtArgs>
+  profesor?: boolean | Prisma.Comunicado$profesorArgs<ExtArgs>
+  autor_admin?: boolean | Prisma.Comunicado$autor_adminArgs<ExtArgs>
   estudiante?: boolean | Prisma.Comunicado$estudianteArgs<ExtArgs>
+  curso?: boolean | Prisma.Comunicado$cursoArgs<ExtArgs>
+  lecturas?: boolean | Prisma.Comunicado$lecturasArgs<ExtArgs>
+  _count?: boolean | Prisma.ComunicadoCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ComunicadoIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  profesor?: boolean | Prisma.ProfesorDefaultArgs<ExtArgs>
+  profesor?: boolean | Prisma.Comunicado$profesorArgs<ExtArgs>
+  autor_admin?: boolean | Prisma.Comunicado$autor_adminArgs<ExtArgs>
   estudiante?: boolean | Prisma.Comunicado$estudianteArgs<ExtArgs>
+  curso?: boolean | Prisma.Comunicado$cursoArgs<ExtArgs>
 }
 export type ComunicadoIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  profesor?: boolean | Prisma.ProfesorDefaultArgs<ExtArgs>
+  profesor?: boolean | Prisma.Comunicado$profesorArgs<ExtArgs>
+  autor_admin?: boolean | Prisma.Comunicado$autor_adminArgs<ExtArgs>
   estudiante?: boolean | Prisma.Comunicado$estudianteArgs<ExtArgs>
+  curso?: boolean | Prisma.Comunicado$cursoArgs<ExtArgs>
 }
 
 export type $ComunicadoPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Comunicado"
   objects: {
-    profesor: Prisma.$ProfesorPayload<ExtArgs>
+    profesor: Prisma.$ProfesorPayload<ExtArgs> | null
+    autor_admin: Prisma.$PersonaPayload<ExtArgs> | null
     estudiante: Prisma.$EstudiantePayload<ExtArgs> | null
+    curso: Prisma.$CursoPayload<ExtArgs> | null
+    lecturas: Prisma.$ComunicadoLecturaPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id_comunicado: number
-    id_profesor: string
+    id_profesor: string | null
+    id_autor_admin: string | null
     id_estudiante: string | null
+    id_curso: number | null
+    alcance: $Enums.AlcanceComunicado
     tipo: $Enums.TipoComunicado
     descripcion: string
     fecha: Date
-    leido_por_padre: boolean
-    es_grupo: boolean
   }, ExtArgs["result"]["comunicado"]>
   composites: {}
 }
@@ -1171,8 +1649,11 @@ readonly fields: ComunicadoFieldRefs;
  */
 export interface Prisma__ComunicadoClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  profesor<T extends Prisma.ProfesorDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProfesorDefaultArgs<ExtArgs>>): Prisma.Prisma__ProfesorClient<runtime.Types.Result.GetResult<Prisma.$ProfesorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  profesor<T extends Prisma.Comunicado$profesorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Comunicado$profesorArgs<ExtArgs>>): Prisma.Prisma__ProfesorClient<runtime.Types.Result.GetResult<Prisma.$ProfesorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  autor_admin<T extends Prisma.Comunicado$autor_adminArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Comunicado$autor_adminArgs<ExtArgs>>): Prisma.Prisma__PersonaClient<runtime.Types.Result.GetResult<Prisma.$PersonaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   estudiante<T extends Prisma.Comunicado$estudianteArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Comunicado$estudianteArgs<ExtArgs>>): Prisma.Prisma__EstudianteClient<runtime.Types.Result.GetResult<Prisma.$EstudiantePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  curso<T extends Prisma.Comunicado$cursoArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Comunicado$cursoArgs<ExtArgs>>): Prisma.Prisma__CursoClient<runtime.Types.Result.GetResult<Prisma.$CursoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  lecturas<T extends Prisma.Comunicado$lecturasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Comunicado$lecturasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComunicadoLecturaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1204,12 +1685,13 @@ export interface Prisma__ComunicadoClient<T, Null = never, ExtArgs extends runti
 export interface ComunicadoFieldRefs {
   readonly id_comunicado: Prisma.FieldRef<"Comunicado", 'Int'>
   readonly id_profesor: Prisma.FieldRef<"Comunicado", 'String'>
+  readonly id_autor_admin: Prisma.FieldRef<"Comunicado", 'String'>
   readonly id_estudiante: Prisma.FieldRef<"Comunicado", 'String'>
+  readonly id_curso: Prisma.FieldRef<"Comunicado", 'Int'>
+  readonly alcance: Prisma.FieldRef<"Comunicado", 'AlcanceComunicado'>
   readonly tipo: Prisma.FieldRef<"Comunicado", 'TipoComunicado'>
   readonly descripcion: Prisma.FieldRef<"Comunicado", 'String'>
   readonly fecha: Prisma.FieldRef<"Comunicado", 'DateTime'>
-  readonly leido_por_padre: Prisma.FieldRef<"Comunicado", 'Boolean'>
-  readonly es_grupo: Prisma.FieldRef<"Comunicado", 'Boolean'>
 }
     
 
@@ -1611,6 +2093,44 @@ export type ComunicadoDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.In
 }
 
 /**
+ * Comunicado.profesor
+ */
+export type Comunicado$profesorArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Profesor
+   */
+  select?: Prisma.ProfesorSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Profesor
+   */
+  omit?: Prisma.ProfesorOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProfesorInclude<ExtArgs> | null
+  where?: Prisma.ProfesorWhereInput
+}
+
+/**
+ * Comunicado.autor_admin
+ */
+export type Comunicado$autor_adminArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Persona
+   */
+  select?: Prisma.PersonaSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Persona
+   */
+  omit?: Prisma.PersonaOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PersonaInclude<ExtArgs> | null
+  where?: Prisma.PersonaWhereInput
+}
+
+/**
  * Comunicado.estudiante
  */
 export type Comunicado$estudianteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1627,6 +2147,49 @@ export type Comunicado$estudianteArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   include?: Prisma.EstudianteInclude<ExtArgs> | null
   where?: Prisma.EstudianteWhereInput
+}
+
+/**
+ * Comunicado.curso
+ */
+export type Comunicado$cursoArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Curso
+   */
+  select?: Prisma.CursoSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Curso
+   */
+  omit?: Prisma.CursoOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CursoInclude<ExtArgs> | null
+  where?: Prisma.CursoWhereInput
+}
+
+/**
+ * Comunicado.lecturas
+ */
+export type Comunicado$lecturasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ComunicadoLectura
+   */
+  select?: Prisma.ComunicadoLecturaSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ComunicadoLectura
+   */
+  omit?: Prisma.ComunicadoLecturaOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ComunicadoLecturaInclude<ExtArgs> | null
+  where?: Prisma.ComunicadoLecturaWhereInput
+  orderBy?: Prisma.ComunicadoLecturaOrderByWithRelationInput | Prisma.ComunicadoLecturaOrderByWithRelationInput[]
+  cursor?: Prisma.ComunicadoLecturaWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ComunicadoLecturaScalarFieldEnum | Prisma.ComunicadoLecturaScalarFieldEnum[]
 }
 
 /**
